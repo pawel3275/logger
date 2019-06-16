@@ -115,6 +115,11 @@ public:
 			return 1;
 		}
 
+		if (conf.flags & conf.OpNOOUT)
+		{
+			return 0;
+		}
+
 		ofstream file(outputFilename, ios::app | ios::out);
 
 		if (file.is_open())

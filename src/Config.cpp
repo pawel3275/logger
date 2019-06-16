@@ -150,16 +150,6 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 		m_dateFormat = value; // keep in mind date format still needs to be parsed.
 	}
 
-	if (key == "DATE_SEPARATOR" && value.length() > 0)
-	{
-		m_dateSeparator = value; //optional
-	}
-
-	if (key == "TIME_SEPARATOR" && value.length() > 0)
-	{
-		m_timeSeparator = value; //optional
-	}
-
 	if (key == "DATE_START" && value.length() > 0)
 	{
 		m_dateStart = value;
@@ -171,14 +161,6 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 	if (key == "OUTPUT_FILENAME" && value.length() > 0 && m_outputFilename.empty())
 	{
 		m_outputFilename = value; //can be provided via cmd
-	}
-	if (key == "DATE_BRACKET_CHAR_START" && value.length() > 0)
-	{
-		m_dateBracketSeparatorStart = value;
-	}
-	if (key == "DATE_BRACKET_CHAR_END" && value.length() > 0)
-	{
-		m_dateBracketSeparatorEnd = value;
 	}
 
 	cout << "Config: \"" << key << "\" equals to: \"" << value << "\"" << endl;
@@ -279,9 +261,10 @@ void Config::genDefaultConfigFile()
 		outfile																																			<< endl;
 		outfile << "#PutYour nGinnx log format from your setting format here"																		    << endl;
 		outfile << "#if empty then default one shall be taken"																							<< endl;
+		outfile << "#!!!SUPPORTING DIFFERENT FORMATS OPTION IS DEPRECIATED FOR NOW!!!"																	<< endl;
 		outfile << "nginx_log_format = $remote_addr\"$remote_user\"$time_local\"$request\"$status\"$body_bytes_sent\"$http_referer\"$http_user_agent;"  << endl;
 		outfile																																			<< endl;
-		outfile << "#State The serparator char in logs"																									<< endl;
+		outfile << "#State The separator char in logs"																									<< endl;
 		outfile << "Separator = \""																									                    << endl;
 		outfile																																			<< endl;
 		outfile << "#state the default log filename from which data should be processed"																<< endl;

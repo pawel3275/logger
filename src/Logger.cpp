@@ -12,8 +12,8 @@ using namespace std;
 void showHelp()
 {
 	cout << "type: --help for general help." << endl;
-	cout << "type: --hh <ARG> for help regarding <ARG>." << endl;
-	cout << "\tPossible <ARG>:" << endl;
+	cout << "type: --hh ARG for help regarding <ARG>." << endl;
+	cout << "\tPossible ARG:" << endl;
 	cout << "\t\tparser\t\"Info about parser of logs from txt to json format\"" << endl;
 	cout << "\t\tmerger\t\"Info about merger of json files\"" << endl;
 	cout << "\t\tconfig\t\"Info about confguration file\"" << endl;
@@ -22,20 +22,21 @@ void showHelp()
 	cout << "\t\t--debug\t\"Run in debug mode. Additional informations will be printed to output\"" << endl;
 	cout << "\t\t--perfo\t\"Run in performance mode to check time measurement\"" << endl;
 	cout << "\t\t--noOut\t\"No Output files will be generated.\"" << endl;
-	cout << "\t\t--conf \t\"Use own config file. Example:\"" << endl;
+	cout << "\t\t--conf \t\"Use own config file.\"" << endl;
 }
 
 void showHelpParser()
 {
 	cout << "Parser is a mode, which takes as input the TXT file" << endl;
 	cout << "specified in a config file, and parses the lines into a JSON file." << endl;
+	cout << "Running \"../logger parser\" without any options makes parser to run in default mode." << endl;
 	cout << "Run:" << endl;
 		cout << "\t../logger parser" << endl;
-		cout << "\t../logger parser -i inputfile.txt -o output.txt ..." << endl;
-		cout << "\t../logger parser [OPTIONS] ..." << endl;
+		cout << "\t../logger parser -i inputfile.txt -o output.txt [...]" << endl;
+		cout << "\t../logger parser [OPTIONS]" << endl;
 	cout << "Parser options:" << endl;
-		cout << "\t../logger parser -i ... \t\"-i specifies input log filename and overrides the one from config\"" << endl;
-		cout << "\t../logger parser -o ... \t\"-o specifies output filename and overrides the one from config\"" << endl;
+		cout << "\t../logger parser -i [...] \t\"-i specifies input log filename and overrides the one from config\"" << endl;
+		cout << "\t../logger parser -o [...] \t\"-o specifies output filename and overrides the one from config\"" << endl;
 }
 
 void showHelpMerger()
@@ -43,9 +44,10 @@ void showHelpMerger()
 	cout << "Merger is a mode, which takes as input multiple" << endl;
 	cout << "input JSON files, and merges them together into one." << endl;
 	cout << "Output file is specified inside the config file." << endl;
+	cout << "Running \"../logger merger\" without any options makes merger to run in default mode." << endl;
 	cout << "Run:" << endl;
 	cout << "\t../logger merger" << endl;
-	cout << "\t../logger merger file1 file2 file3 ... [OPTIONS] ..." << endl;
+	cout << "\t../logger merger file1 file2 file3 [...] [OPTIONS]" << endl;
 }
 
 void showHelpConfig()
@@ -220,7 +222,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		for (int i = 0; i < filesToMerge.size(); i++)
+		for (unsigned int i = 0; i < filesToMerge.size(); i++)
 		{
 			mergerObj.loadFromProcessedLog(filesToMerge[i]);
 		}

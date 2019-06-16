@@ -53,13 +53,9 @@ protected:
 	string m_configFilename;
 	string m_logFilename;
 	string m_dateFormat;
-	string m_dateSeparator;
-	string m_timeSeparator;
 	string m_dateStart;
 	string m_dateEnd;
 	string m_outputFilename;
-	string m_dateBracketSeparatorStart;
-	string m_dateBracketSeparatorEnd;
 
 	int m_lineBuffer;
 	char m_separator;

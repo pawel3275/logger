@@ -290,7 +290,11 @@ int JsonOutput::writeVarsToFile(map <string, map <string, string> > varData)
 		return 1;
 	}
 
-	//NO OUTPUT
+	if (conf.flags & conf.OpNOOUT)
+	{
+		return 0;
+	}
+
 	ofstream file(outputFilename, ios::app | ios::out);
 
 	if (file.is_open())
