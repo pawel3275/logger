@@ -91,7 +91,7 @@ public:
 		return m;
 	};
 
-	static int writeDateToFile(vector <date*> *m_dateInstancesPTR);
+	static int writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR);
 	static int writeVarsToFile(map <string, map <string, string> > varData);
 	static int monthStrTomonthDec(string month);
 	static int getNumOfDays(int month);

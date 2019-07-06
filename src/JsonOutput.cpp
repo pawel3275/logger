@@ -1,4 +1,3 @@
-//#include "../stdafx.h"
 #include "../include/JsonOutput.h"
 
 using namespace std;
@@ -31,7 +30,7 @@ JsonOutput::JsonOutput(
 	m_dataEnd   = "\t]\n";
 	m_varEnd    = "};\n";
 
-	//DEBUG
+	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -60,16 +59,14 @@ JsonOutput::JsonOutput(
 {
 	m_varName = "var " + varName + " = {\n";
 	Loader &loadedData = Loader::getInstance();
-	vector <date*> *m_dateInstancesPTR = loadedData.getDateInstancesPTR();
 	
-	//DEBUG
+	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: JsonOutput() " << endl;
 		cout << "m_varName->" << m_varName << endl;
 		cout << "loadedData->" << &loadedData << endl;
-		cout << "m_dateInstancesPTR->" << m_dateInstancesPTR << endl;
 	}
 }
 
@@ -84,7 +81,7 @@ JsonOutput::JsonOutput(
 /*********************************/
 int JsonOutput::monthStrTomonthDec(string month)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -107,7 +104,7 @@ int JsonOutput::monthStrTomonthDec(string month)
 /*********************************/
 string JsonOutput::monthDecTomonthStr(int month)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -129,7 +126,7 @@ string JsonOutput::monthDecTomonthStr(int month)
 /*********************************/
 int JsonOutput::getNumOfDays(int month)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -149,11 +146,11 @@ int JsonOutput::getNumOfDays(int month)
 /*	then it checks for unique month corresnpondent with those unique years to process
 /*	after that whole data is movied to json file with unique values
 /*Input:
-/*	vector <date*> *m_dateInstancesPTR - pointer to vector with date structures
+/*	vector <date> m_dateInstancesPTR - vector with date structures
 /*Output:
 /*	int status - returns status, 0 if full success
 /*********************************/
-int JsonOutput::writeDateToFile(vector <date*> *m_dateInstancesPTR)
+int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 {
 	Config &conf = Config::getInstance();
 	string outputFilename = conf.m_outputFilename;
@@ -164,7 +161,7 @@ int JsonOutput::writeDateToFile(vector <date*> *m_dateInstancesPTR)
 		return 1;
 	}
 
-	//NO OUTPUT
+	// NO OUTPUT
 	if (conf.flags & conf.OpNOOUT)
 	{
 		return 0;
@@ -176,8 +173,8 @@ int JsonOutput::writeDateToFile(vector <date*> *m_dateInstancesPTR)
 	{
 		vector <string> uniqueYearsToProcess;
 		vector<string>::iterator iterato;
-		//Find unique values of years in dateInstances.
-		for (vector<date*>::iterator pObj = m_dateInstancesPTR->begin(); pObj != m_dateInstancesPTR->end(); pObj++)
+		// Find unique values of years in dateInstances.
+		for (vector <shared_ptr<date>>::iterator pObj = move(m_dateInstancesPTR.begin()); pObj != move(m_dateInstancesPTR.end()); pObj++)
 		{
 			iterato = find(uniqueYearsToProcess.begin(), uniqueYearsToProcess.end(), (*pObj)->year);
 			if (iterato == uniqueYearsToProcess.end())
@@ -189,40 +186,40 @@ int JsonOutput::writeDateToFile(vector <date*> *m_dateInstancesPTR)
 		file << "var dates = [" << endl;
 		for (vector<string>::iterator vec = uniqueYearsToProcess.begin(); vec != uniqueYearsToProcess.end(); vec++)
 		{
-			vector<date*> pStructsToProcess;
+			vector <shared_ptr<date>> pStructsToProcess;
 			vector<int> uniqueMonths;
-			//Find unique values of months in dateInstances for current processed year.
-			for (vector<date*>::iterator pObj = m_dateInstancesPTR->begin(); pObj != m_dateInstancesPTR->end(); pObj++)
+			// Find unique values of months in dateInstances for current processed year.
+			for (vector <shared_ptr<date>>::iterator pObj = m_dateInstancesPTR.begin(); pObj != m_dateInstancesPTR.end(); pObj++)
 			{
 				if ((*pObj)->year == *vec)
 				{
 					uniqueMonths.push_back(monthStrTomonthDec((*pObj)->month));
-					pStructsToProcess.push_back(*pObj);
+					pStructsToProcess.push_back(move(*pObj));
 				}
 			}
 
-			//File output operation starts here:
+			// File output operation starts here:
 			file << "\t" << *vec << ": {" << endl;
 			for (unsigned short i = 1; i <= 12; i++)
 			{
 				file << "\t\t" << i << ": {" << endl;
 				if (find(uniqueMonths.begin(), uniqueMonths.end(), i) != uniqueMonths.end())
 				{
-					//Scenario for month occuring in struct table.
-					//FindStruct with correct month
-					date* pDateStruct = nullptr;
-					for (vector<date*>::iterator Obj = pStructsToProcess.begin(); Obj != pStructsToProcess.end(); Obj++)
+					// Scenario for month occuring in struct table.
+					// FindStruct with correct month
+					shared_ptr<date> pDateStruct(new date);
+					for (vector <shared_ptr<date>>::iterator Obj = pStructsToProcess.begin(); Obj != pStructsToProcess.end(); Obj++)
 					{
-						//go through the unique months in unique objects pointer to find month-day values
+						// go through the unique months in unique objects pointer to find month-day values
 						int month = monthStrTomonthDec((*Obj)->month);
 						if (month == i)
 						{
-							pDateStruct = *Obj;
+							pDateStruct = move(*Obj);
 							break;
 						}
 					}
 
-					//if such is found fill it out with values from Loader::date::day
+					// if such is found fill it out with values from Loader::date::day
 					if (pDateStruct)
 					{
 						int month = monthStrTomonthDec((*pDateStruct).month);
@@ -241,7 +238,7 @@ int JsonOutput::writeDateToFile(vector <date*> *m_dateInstancesPTR)
 				}
 				else 
 				{
-					//No month present, fill out whole month with zeros.
+					// No month present, fill out whole month with zeros.
 					int numofDays = getNumOfDays(i);
 					for (unsigned short j = 1; j <= numofDays; j++)
 					{

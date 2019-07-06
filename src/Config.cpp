@@ -1,4 +1,3 @@
-//#include "../include/stdafx.h"
 #include "../include/Config.h"
 
 using namespace std;
@@ -70,13 +69,13 @@ int Config::loadConfigFromFile()
 	if (!inFile.is_open())
 	{
 		cerr << "DEBUG: searching for config... " << endl;
-		//Check for default lower case filename...
+		// Check for default lower case filename...
 		transform(m_configFilename.begin(), m_configFilename.end(), m_configFilename.begin(), ::tolower);
 		inFile.open(m_configFilename.c_str());
 		if (!inFile.is_open())
 		{
-			//Check for default config...
-			setConfigFilename("Config.txt");
+			// Check for default config...
+			setConfigFilename("config.cfg");
 			inFile.open(m_configFilename.c_str());
 			if (!inFile.is_open())
 			{
@@ -98,7 +97,7 @@ int Config::loadConfigFromFile()
 		}
 		vector<string> lineElements;
 		split(configLine, '=', lineElements);
-		status = assaignConfigToVariables(lineElements[0], lineElements[1]); //assert needed here
+		status = assaignConfigToVariables(lineElements[0], lineElements[1]); // assert needed here
 		
 		/*DEBUG*/
 		if (status != 0)
@@ -127,27 +126,27 @@ int Config::loadConfigFromFile()
 template <typename keyType, typename variableType>
 int Config::assaignConfigToVariables(keyType key, variableType value)
 {
-	//make loaded value from key uppercase
+	// make loaded value from key uppercase
 	transform(key.begin(), key.end(), key.begin(), ::toupper);
 
 	if (key == "SEPARATOR" && value.length() > 0)
 	{
-		m_separator = value[0]; //Take upon consideration only one char
+		m_separator = value[0]; // Take upon consideration only one char
 	}
 
 	if (key == "LINEBUFFER" && value.length() > 0)
 	{
-		m_lineBuffer = stoi(value); //convert int to string with stoi
+		m_lineBuffer = stoi(value); // convert int to string with stoi
 	}
 
 	if (key == "LOG_FILENAME" && value.length() > 0 && m_logFilename.empty())
 	{
-		m_logFilename = value; //can be provided via cmd
+		m_logFilename = value; // can be provided via cmd
 	}
 	
 	if (key == "DATE_FORMAT" && value.length() > 0)
 	{
-		m_dateFormat = value; // keep in mind date format still needs to be parsed.
+		m_dateFormat = value; //  keep in mind date format still needs to be parsed.
 	}
 
 	if (key == "DATE_START" && value.length() > 0)
@@ -160,7 +159,7 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 	}
 	if (key == "OUTPUT_FILENAME" && value.length() > 0 && m_outputFilename.empty())
 	{
-		m_outputFilename = value; //can be provided via cmd
+		m_outputFilename = value; // can be provided via cmd
 	}
 
 	cout << "Config: \"" << key << "\" equals to: \"" << value << "\"" << endl;
@@ -181,8 +180,8 @@ void Config::configSetup()
 	if (m_configFilename.empty())
 	{
 		cout << "Debug: No config file specified, using default one: ";
-		cout << "Config.txt" << endl;
-		m_configFilename = "Config.txt";
+		cout << "config.cfg" << endl;
+		m_configFilename = "config.cfg";
 
 		status = loadConfigFromFile();
 	}
@@ -251,34 +250,34 @@ void Config::setConfigFilename(string newConfigGilename)
 /*********************************/
 void Config::genDefaultConfigFile()
 {
-	ofstream outfile("Config.txt", ios::trunc | ios::out);
+	ofstream outfile("config.cfg", ios::trunc | ios::out);
 	{
-		outfile << "#This is example Config file of the Merger "                                                                                        << endl;
+		outfile << "# This is example Config file of the Merger "                                                                                        << endl;
 		outfile                                                                                                                                         << endl;
-		outfile << "#State how many lines should be processed in one batch, useful for memory save up,"													<< endl;
-		outfile << "#but increases the I/O number of operations needed"																					<< endl;
+		outfile << "# State how many lines should be processed in one batch, useful for memory save up,"													<< endl;
+		outfile << "# but increases the I/O number of operations needed"																					<< endl;
 		outfile << "LineBuffer = 20000"																													<< endl;
 		outfile																																			<< endl;
-		outfile << "#PutYour nGinnx log format from your setting format here"																		    << endl;
-		outfile << "#if empty then default one shall be taken"																							<< endl;
-		outfile << "#!!!SUPPORTING DIFFERENT FORMATS OPTION IS DEPRECIATED FOR NOW!!!"																	<< endl;
+		outfile << "# PutYour nGinnx log format from your setting format here"																		    << endl;
+		outfile << "# if empty then default one shall be taken"																							<< endl;
+		outfile << "# !!!SUPPORTING DIFFERENT FORMATS OPTION IS DEPRECIATED FOR NOW!!!"																	<< endl;
 		outfile << "nginx_log_format = $remote_addr\"$remote_user\"$time_local\"$request\"$status\"$body_bytes_sent\"$http_referer\"$http_user_agent;"  << endl;
 		outfile																																			<< endl;
-		outfile << "#State The separator char in logs"																									<< endl;
+		outfile << "# State The separator char in logs"																									<< endl;
 		outfile << "Separator = \""																									                    << endl;
 		outfile																																			<< endl;
-		outfile << "#state the default log filename from which data should be processed"																<< endl;
+		outfile << "# state the default log filename from which data should be processed"																<< endl;
 		outfile << "Log_filename = C:\\Users\\<user>\\logs\\example.log"																				<< endl;
 		outfile																																			<< endl;
-		outfile << "#format of the date"																												<< endl;
+		outfile << "# format of the date"																												<< endl;
 		outfile << "Date_format = Day/Month/Year:hour:minute:second timezone"																			<< endl;
 		outfile																																			<< endl;
-		outfile << "#State from which date period the data should be processed"																			<< endl;
-		outfile << "#Possible values : \"all\" | date in format \"DD/MM/YYYY\""																			<< endl;
+		outfile << "# State from which date period the data should be processed"																			<< endl;
+		outfile << "# Possible values : \"all\" | date in format \"DD/MM/YYYY\""																			<< endl;
 		outfile << "Date_start = all"																													<< endl;
 		outfile << "Date_end = all"																														<< endl;
 		outfile																																			<< endl;
-		outfile << "#filename of the output"																											<< endl;
+		outfile << "# filename of the output"																											<< endl;
 		outfile << "output_filename = testoutput.txt"																									<< endl;
 	}
 	outfile.close();

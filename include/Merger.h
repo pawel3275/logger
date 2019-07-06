@@ -25,7 +25,7 @@ public:
 
 private:
 	//Vector with pointers to date nodes.
-	vector <date*> m_dateInstancesPTR;
+	vector <shared_ptr <date>> m_dateInstancesPTR;
 
 	//Taken from config
 	string m_sourceOutputFile;

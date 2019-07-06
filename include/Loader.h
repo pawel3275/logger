@@ -135,8 +135,7 @@ public:
 		map <string, int> timeZone;
 	}timeInstance;
 
-	vector <date*> m_dateInstancesPTR;
-	vector <date*> *getDateInstancesPTR() { return &m_dateInstancesPTR; }
+	vector <shared_ptr<date>> m_dateInstancesPTR;
 
 private:
 	Loader();

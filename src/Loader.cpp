@@ -1,4 +1,3 @@
-//#include "../stdafx.h"
 #include "../include/Loader.h"
 #include "../include/Config.h"
 
@@ -17,7 +16,7 @@ Loader::Loader()
 	getDateFormatFromConfig();
 	getDataFormatPatterns();
 
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -76,7 +75,7 @@ int Loader::loadFromFileToMap()
 		loading = true;
 	}
 
-	//DEBUG
+	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: loadFromFileToMap()" << endl;
@@ -87,39 +86,39 @@ int Loader::loadFromFileToMap()
 	}
 
 	size_t position;
-	//load until:
-	//1. You reach end of file 
-	//2. Buffer taken from config is not exceeded
+	// load until:
+	// 1. You reach end of file 
+	// 2. Buffer taken from config is not exceeded
 	while (getline(inFile, logLine))
 	{
 		if (conf.flags & conf.OpDEBUG)
 		{
 			cout << "DEBUG processing line: " << logLine << endl;
 		}
-		//if:
-		//1. You are not loading all
-		//2. Not loading now
+		// if:
+		// 1. You are not loading all
+		// 2. Not loading now
 		if (!loadAll && !loading)
 		{
-			//Start date specified in config is present at this line
+			// Start date specified in config is present at this line
 			position = logLine.find(startDate);
 			if (position != string::npos)
 			{
-				//start loading from file
+				// start loading from file
 				loading = true;
 			}
 		}
 
-		//if:
-		//1. You are not loading all
-		//2. You are loading now
+		// if:
+		// 1. You are not loading all
+		// 2. You are loading now
 		if (!loadAll && loading)
 		{
-			//End date specified in config is present at this line
+			// End date specified in config is present at this line
 			position = logLine.find(endDate);
 			if (position != string::npos)
 			{
-				//Stop loading
+				// Stop loading
 				loading = false;
 			}
 		}
@@ -129,10 +128,10 @@ int Loader::loadFromFileToMap()
 			parseToCorrectContainer(logLine);
 		}
 
-		//whole buffer or file has been processed - time to spit data out;
+		// whole buffer or file has been processed - time to spit data out;
 		if (inFile.eof())
 		{
-			//To check how many times we have reached buffer
+			// To check how many times we have reached buffer
 			CountRegister++;
 			CurrentLine = 0;
 			break;
@@ -140,7 +139,7 @@ int Loader::loadFromFileToMap()
 
 		CurrentLine++;
 
-		//whole file processed time to send success status
+		// whole file processed time to send success status
 		if (inFile.eof())
 		{
 			CountRegister += CurrentLine;
@@ -194,7 +193,7 @@ int Loader::parseToCorrectContainer(string logLine)
 		cout << "logLine->" << "logLine" << endl;
 	}
 
-	//Split line and add to correct maps
+	// Split line and add to correct maps
 	for (const auto format : defaultNginxFormats::allDefaultNginxFormatsTypes)
 	{
 		position = logLine.find(separator);
@@ -229,7 +228,7 @@ int Loader::parseToCorrectContainer(string logLine)
 		default:
 			break;
 		}
-		logLine.erase(0, position + 1); //1 stands for separator length
+		logLine.erase(0, position + 1); // 1 stands for separator length
 	}
 
 	
@@ -300,31 +299,31 @@ void Loader::parseDateFromFileToMap(string logLine)
 	}
 	for (unsigned int i = 0; i <= logLine.length(); i++)
 	{
-		if ((logLine[i] < 65 || logLine[i] > 90) && //check for small letters
-			(logLine[i] < 97 || logLine[i] > 122) && //check for big letters
-			(logLine[i] < 48 || logLine[i] > 57) && //check for numbers
-			(logLine[i] != '+' && logLine[i] != '-') //check for + and - (timezone)
+		if ((logLine[i] < 65 || logLine[i] > 90) && // check for small letters
+			(logLine[i] < 97 || logLine[i] > 122) && // check for big letters
+			(logLine[i] < 48 || logLine[i] > 57) && // check for numbers
+			(logLine[i] != '+' && logLine[i] != '-') // check for + and - (timezone)
 			)
 		{
 			if (find(m_dateDelimeters.begin(), m_dateDelimeters.end(), logLine[i]) == m_dateDelimeters.end() &&
-				logLine[i] != '\0' && logLine[i] != 32 //since you cant do != '' then literal 32 for empty char is used
+				logLine[i] != '\0' && logLine[i] != 32 // since you cant do != '' then literal 32 for empty char is used
 				)
 			{
-				//save separator to the separators list if it wasn't there already
+				// save separator to the separators list if it wasn't there already
 				m_dateDelimeters.push_back(logLine[i]);
 			}
 
-			values.push_back(trimmedString); //since we reached separator push back string
-			replace(logLine.begin(), logLine.end(), logLine[i], ' '); //replace separator with whitespace
-			trimmedString = ""; //reset trimmed string value to 0
+			values.push_back(trimmedString); // since we reached separator push back string
+			replace(logLine.begin(), logLine.end(), logLine[i], ' '); // replace separator with whitespace
+			trimmedString = ""; // reset trimmed string value to 0
 		}
 		if (logLine[i] != ' ')
 		{
-			trimmedString += logLine[i]; //append value to string
+			trimmedString += logLine[i]; // append value to string
 		}
 	}
 
-	//DEBUG
+	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "trimmedString->" << trimmedString << endl;
@@ -348,7 +347,7 @@ void Loader::parseDateFromFileToMap(string logLine)
 template <typename mapType, typename keyType> 
 int Loader::insertToCorrectMap(mapType format, keyType key)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -419,7 +418,7 @@ int Loader::insertToCorrectMap(mapType format, keyType key)
 /*********************************/
 void Loader::splitRequest(string requestLine)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -447,7 +446,7 @@ void Loader::splitRequest(string requestLine)
 /*********************************/
 string Loader::getDateFormatFromConfig()
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -462,14 +461,14 @@ string Loader::getDateFormatFromConfig()
 	map <string, string>::iterator iter;
 
 	int position;
-	//find positions of each pattern
+	// find positions of each pattern
 	for (iter = dataPatterns.begin(); iter != dataPatterns.end(); iter++)
 	{
 		position = static_cast<int>(dateFormat.find(iter->first));
-		positions.insert(pair <int, string>(position, iter->first)); //save it to map in structure
+		positions.insert(pair <int, string>(position, iter->first)); // save it to map in structure
 	}
 
-	//merge pattern into whole one;
+	// merge pattern into whole one;
 	string pattern;
 	map <int, string>::iterator iterForPattern;
 	for (iterForPattern = positions.begin(); iterForPattern != positions.end(); iterForPattern++)
@@ -478,7 +477,7 @@ string Loader::getDateFormatFromConfig()
 	}
 	m_dataPattern = pattern;
 
-	//DEBUG
+	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "pattern->" << pattern << endl;
@@ -498,7 +497,7 @@ string Loader::getDateFormatFromConfig()
 /*********************************/
 void Loader::setCreateOperatingSystem(string httpUserAgent)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -631,7 +630,7 @@ void Loader::setCreateOperatingSystem(string httpUserAgent)
 /*********************************/
 void Loader::setCreateWebBrowser(string httpUserAgent)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -696,7 +695,7 @@ void Loader::setCreateWebBrowser(string httpUserAgent)
 /*********************************/
 void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -713,14 +712,17 @@ void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 			}
 		}
 	}
-
-	date *ptr = new date;
+	
+	shared_ptr<date> ptr(new date());
 	ptr->year = m_date["YYYY"];
 	ptr->month = m_date["MM"];
-	mapInsertion(ptr->day, m_date["DD"]);
+	mapInsertion(move(ptr->day), m_date["DD"]);
 
-	vector<date*>::iterator foundPosition;
-	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](date* arg) { return ((ptr->year == arg->year) && (ptr->month == arg->month)); });
+	vector<shared_ptr<date>>::iterator foundPosition;
+	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](shared_ptr <date> const &arg) 
+							{ 
+								return ((ptr->year == arg->year) && (ptr->month == arg->month));
+							});
 
 	if (foundPosition != m_dateInstancesPTR.end())
 	{
@@ -729,7 +731,7 @@ void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 	}
 	else
 	{
-		m_dateInstancesPTR.push_back(ptr);
+		m_dateInstancesPTR.push_back(move(ptr));
 	}
 }
 
@@ -747,7 +749,7 @@ void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 template<typename Type1, typename Type2>
 int Loader::mapInsertion(map <Type1, Type2> &data, Type1 key)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -759,12 +761,12 @@ int Loader::mapInsertion(map <Type1, Type2> &data, Type1 key)
 	iter = data.find(key);
 	if (iter != data.end())
 	{
-		//key does exist, increment value by one
+		// key does exist, increment value by one
 		iter->second++;
 	}
 	else
 	{
-		//key doesn't exist
+		// key doesn't exist
 		data.insert(pair <Type1, Type2>(key, 1));
 	}
 
@@ -785,7 +787,7 @@ int Loader::mapInsertion(map <Type1, Type2> &data, Type1 key)
 template<typename KeyType, typename ValueType>
 int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes format, map <KeyType, ValueType> data)
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -808,7 +810,7 @@ int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTyp
 	case defaultNginxFormats::e_DATE:
 	{
 		JsonOutput json("date", true);
-		JsonOutput::writeDateToFile(&m_dateInstancesPTR);
+		JsonOutput::writeDateToFile(move(m_dateInstancesPTR));
 		break;
 	}
 	case defaultNginxFormats::e_REQUESTTYPE:
@@ -873,7 +875,7 @@ int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTyp
 /*********************************/
 Loader::~Loader()
 {
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{

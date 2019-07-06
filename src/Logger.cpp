@@ -1,4 +1,3 @@
-//﻿#include "stdafx.h"
 #include <iostream>
 #include <stdio.h>
 #include <chrono>
@@ -13,6 +12,7 @@ void showHelp()
 {
 	cout << "type: --help for general help." << endl;
 	cout << "type: --hh ARG for help regarding <ARG>." << endl;
+	cout << "Please note: passed arguments can be either lowercase or uppercase." << endl;
 	cout << "\tPossible ARG:" << endl;
 	cout << "\t\tparser\t\"Info about parser of logs from txt to json format\"" << endl;
 	cout << "\t\tmerger\t\"Info about merger of json files\"" << endl;
@@ -84,31 +84,35 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < argc; ++i)
 		{
 			options.push_back(argv[i]);
+			if (options[i].length() > 2)
+			{
+				transform(options[i].begin(), options[i].end(), options[i].begin(), ::toupper);
+			}
 		}
 
-		if (options[1] == "--help" && argc <= 2)
+		if (options[1] == "--HELP" && argc <= 2)
 		{
 			showHelp();
 			return 0;
 		}
-		else if (options[1] == "--hh" && argc > 2)
+		else if (options[1] == "--HH" && argc > 2)
 		{
-			if (options[2] == "parser")
+			if (options[2] == "PARSER")
 			{
 				showHelpParser();
 				return 0;
 			}
-			else if (options[2] == "merger")
+			else if (options[2] == "MERGER")
 			{
 				showHelpMerger();
 				return 0;
 			}
-			else if (options[2] == "config")
+			else if (options[2] == "CONFIG")
 			{
 				showHelpConfig();
 				return 0;
 			}
-			else if (options[2] == "usage")
+			else if (options[2] == "USAGE")
 			{
 				showHelpUsage();
 				return 0;
@@ -120,7 +124,7 @@ int main(int argc, char *argv[])
 				return 0;
 			}
 		}
-		else if(options[1] == "--hh" && argc == 2)
+		else if(options[1] == "--HH" && argc == 2)
 		{
 			cout << "No specified option!" << endl;
 			showHelp();
@@ -133,31 +137,31 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if (find(options.begin(), options.end(), "--genNew") != options.end())
+	if (find(options.begin(), options.end(), "--GENNEW") != options.end())
 	{
 		cout << "Generating new default config file." << endl;
 		Config::genDefaultConfigFile();
 		return 0;
 	}
-	if (find(options.begin(), options.end(), "--debug") != options.end())
+	if (find(options.begin(), options.end(), "--DEBUG") != options.end())
 	{
 		cout << "Running with debug flag." << endl;
 		conf.flags = conf.OpDEBUG;
 	}
-	if (find(options.begin(), options.end(), "--perfo") != options.end())
+	if (find(options.begin(), options.end(), "--PERFO") != options.end())
 	{
 		cout << "Running with performance flag." << endl;
 		conf.flags = conf.OpPERFO;
 	}
-	if (find(options.begin(), options.end(), "--noOut") != options.end())
+	if (find(options.begin(), options.end(), "--NOOUT") != options.end())
 	{
 		cout << "Running without output flag." << endl;
 		conf.flags = conf.OpNOOUT;
 	}
 
-	if (find(options.begin(), options.end(), "--conf") != options.end())
+	if (find(options.begin(), options.end(), "--CONF") != options.end())
 	{
-		ptrdiff_t pos = find(options.begin(), options.end(), "--conf") - options.begin();
+		ptrdiff_t pos = find(options.begin(), options.end(), "--CONF") - options.begin();
 		if (pos <= options.size())
 		{
 			conf.setConfigFilename(options[pos+1]);
@@ -165,16 +169,16 @@ int main(int argc, char *argv[])
 		else
 		{
 			cerr << "ERROR: Provide Config file! Example:" << endl;
-			cerr << "\t../logger <ARG> --conf myconfig.txt ..." << endl;
+			cerr << "\t../logger <ARG> --conf myconfig.cfg ..." << endl;
 			return 0;
 		}
 	}
 
 	conf.configSetup();
 
-	if (argc > 1 && options[1] == "parser")
+	if (argc > 1 && options[1] == "PARSER")
 	{
-		if (find(options.begin(), options.end(), "-i") != options.end()) //i for in
+		if (find(options.begin(), options.end(), "-i") != options.end()) // i for in
 		{
 			ptrdiff_t pos = find(options.begin(), options.end(), "-i") - options.begin();
 			if (pos <= options.size())
@@ -188,7 +192,7 @@ int main(int argc, char *argv[])
 				return 0;
 			}
 		}
-		if (find(options.begin(), options.end(), "-o") != options.end()) // o for out
+		if (find(options.begin(), options.end(), "-o") != options.end()) //  o for out
 		{
 			ptrdiff_t pos = find(options.begin(), options.end(), "-o") - options.begin();
 			if (pos <= options.size())
@@ -203,11 +207,11 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		//Parse the file taken from configuration file.
+		// Parse the file taken from configuration file.
 		Loader &loaderInst = Loader::getInstance();
 		loaderInst.loadFromFileToMap();
 	}
-	else if (argc > 1 && options[1] == "merger")
+	else if (argc > 1 && options[1] == "MERGER")
 	{
 		Merger mergerObj;
 		vector <string> filesToMerge;
@@ -217,7 +221,7 @@ int main(int argc, char *argv[])
 			string option = argv[i];
 			if (option.find(" --") == string::npos)
 			{
-				//Save up files to merge
+				// Save up files to merge
 				filesToMerge.push_back(option);
 			}
 		}

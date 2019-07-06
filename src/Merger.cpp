@@ -1,4 +1,3 @@
-//#include "../stdafx.h"
 #include "../include/Merger.h"
 
 /*********************************/
@@ -36,7 +35,7 @@ int Merger::addToMap(map <KeyType, ValueType> &data, KeyType key)
 	typename map <KeyType, ValueType>::iterator iter;
 	iter = data.find(key);
 	Config &conf = conf.getInstance();
-	//DEBUG
+	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: addToMap()" << endl;
@@ -46,12 +45,12 @@ int Merger::addToMap(map <KeyType, ValueType> &data, KeyType key)
 
 	if (iter != data.end())
 	{
-		//key does exist, increment value by one
+		// key does exist, increment value by one
 		iter->second++;
 	}
 	else
 	{
-		//key doesn't exist
+		// key doesn't exist
 		data.insert(pair <KeyType, ValueType>(key, 1));
 	}
 
@@ -76,7 +75,7 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 {
 	ifstream inFile;
 
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -112,12 +111,12 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 
 	while (getline(inFile, inLine))
 	{
-		//DEBUG
+		// DEBUG
 		if (conf.flags & conf.OpDEBUG)
 		{
 			cout << "DEBUG processing line: " << inLine << endl;
 		}
-		//Check if we are inside date
+		// Check if we are inside date
 		if (insideDate)
 		{
 			string parsingLine = inLine;
@@ -130,17 +129,17 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 				parsingLine.erase(remove(parsingLine.begin(), parsingLine.end(), ':'), parsingLine.end());
 
 			}
-			//For year
+			// For year
 			if (nestingLevel == 1)
 			{
 				year = parsingLine;
 			}
-			//For month
+			// For month
 			else if (nestingLevel == 2)
 			{
 				month = parsingLine;
 			}
-			//For day
+			// For day
 			else if (nestingLevel == 3)
 			{
 				if (parsingLine.find(':') != string::npos)
@@ -168,18 +167,18 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 				insideDate = false;
 			}
 		}
-		//check if currently inside var and data
+		// check if currently inside var and data
 		if (insideVar && insideData)
 		{
-			//If we are inside and data is being processed but we ecnountered data stop char as below 
-			//then state that loading should stop
+			// If we are inside and data is being processed but we ecnountered data stop char as below 
+			// then state that loading should stop
 			if (inLine == "\t]")
 			{
 				insideVar = false;
 				insideData = false;
 			}
-			//Process and get the Key:
-			//Find the key value between chars
+			// Process and get the Key:
+			// Find the key value between chars
 			string key;
 			if (inLine.find("', ") != string::npos && inLine.find("['") != string::npos)
 			{
@@ -187,13 +186,13 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 				size_t posEnd = inLine.find("', ");
 				key = inLine.substr(posStart, posEnd - posStart);
 				string concat = "['" + key + "', ";
-				//Cut it out to get the value between different chars
+				// Cut it out to get the value between different chars
 				posStart = inLine.find(concat);
 				inLine.erase(posStart, concat.length());
 			}
 
-			//Process and get Value
-			//Cut out the value
+			// Process and get Value
+			// Cut out the value
 			string value;
 			if (inLine.find("]") != string::npos && inLine.find("[") != string::npos)
 			{
@@ -207,35 +206,35 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 			}
 
 
-			//Check if the value for key is present already in map for current var
+			// Check if the value for key is present already in map for current var
 			if (m_varData[currentVar][key] == "")
 			{
-				//Value for key does not exist
+				// Value for key does not exist
 				int PrevValue = 0;
 				int CurrValue = stoi(value);
 				value = to_string(PrevValue + CurrValue);
 			}
 			else
 			{
-				//Value for key exists, increment it
+				// Value for key exists, increment it
 				int PrevValue = stoi(m_varData[currentVar][key]);
 				int CurrValue = stoi(value);
 				value = to_string(PrevValue + CurrValue);
 			}
 
-			//Add/update map key value
+			// Add/update map key value
 			m_varData[currentVar][key] = value;
 		}
-		//This is for merging the date wiyh year -> month -> day 
+		// This is for merging the date wiyh year -> month -> day 
 		if (inLine.find("var dates = [") != string::npos)
 		{
 			insideDate = true;
 			nestingLevel = 1;
 		}
 
-		//If we are currently not loading
-		//And we are not loading unless we found the var
-		//Code below is actually to just save the var in which we currently are
+		// If we are currently not loading
+		// And we are not loading unless we found the var
+		// Code below is actually to just save the var in which we currently are
 		if (!loading)
 		{
 			size_t posStart = inLine.find("var ");
@@ -248,8 +247,8 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 			}
 		}
 
-		//If we have encountered the 'meat' of the var which is the data (keys and values)
-		//then let's start loading this up to the map
+		// If we have encountered the 'meat' of the var which is the data (keys and values)
+		// then let's start loading this up to the map
 		if (insideVar && inLine.find("\tdata: [") != string::npos)
 		{
 			insideData = true;
@@ -257,7 +256,7 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 
 	}
 
-	//Close the file afterwards
+	// Close the file afterwards
 	inFile.close();
 }
 
@@ -273,26 +272,25 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 /*********************************/
 void Merger::SaveProcessedLog(string sourceOutputFile)
 {
-	//DEBUG
+	//  DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: SaveProcessedLog()" << endl;
 	}
 	/*********************/
-	//Movie Vars to output
+	// Movie Vars to output
 	/*********************/
 	JsonOutput::writeVarsToFile(m_varData);
 	/*********************/
-	//Movie Date to output
+	//  Movie Date to output
 	/*********************/
-	auto *datePtr = &m_dateInstancesPTR;
-	for (vector<date*>::iterator pObj = datePtr->begin(); pObj != datePtr->end(); pObj++)
+	for (vector <shared_ptr<date>>::iterator pObj = m_dateInstancesPTR.begin(); pObj != m_dateInstancesPTR.end(); pObj++)
 	{
 		int month = stoi((*pObj)->month);
 		(*pObj)->month = JsonOutput::monthDecTomonthStr(month);
 	}
-	JsonOutput::writeDateToFile(datePtr);
+	JsonOutput::writeDateToFile(m_dateInstancesPTR);
 }
 
 /*********************************/
@@ -310,14 +308,17 @@ void Merger::SaveProcessedLog(string sourceOutputFile)
 /*********************************/
 int Merger::updateDateStruct(string s_year, string s_month, string s_day, string s_dayValue)
 {
-	vector<date*>::iterator foundPosition;
-	date *ptr = new date;
+	vector <shared_ptr<date>>::iterator foundPosition;
+	shared_ptr <date> ptr(new date());
 	ptr->year = s_year;
 	ptr->month = s_month;
 
-	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](date* arg) { return ((ptr->year == arg->year) && (ptr->month == arg->month)); });
+	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](shared_ptr <date> const &arg) 
+							{ 
+								return ((ptr->year == arg->year) && (ptr->month == arg->month));
+							});
 
-	//DEBUG
+	//  DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -327,18 +328,18 @@ int Merger::updateDateStruct(string s_year, string s_month, string s_day, string
 		cout << "s_day->" << s_day << endl;
 		cout << "foundPosition->" << *foundPosition << endl;
 	}
-
+	
 	if (foundPosition != m_dateInstancesPTR.end())
 	{
-		int index = distance(m_dateInstancesPTR.begin(), foundPosition);
-		m_dateInstancesPTR[index]->day[s_day] += stoi(s_dayValue);
+		int index = distance(m_dateInstancesPTR.begin(), move(foundPosition));
+		((*m_dateInstancesPTR[index]).day[s_day] += stoi(s_dayValue));
 	}
 	else
 	{
 		ptr->day[s_day] = stoi(s_dayValue);
-		m_dateInstancesPTR.push_back(ptr);
+		m_dateInstancesPTR.push_back(move(ptr));
 	}
-
+	
 	return 0;
 }
 
@@ -360,7 +361,7 @@ int Merger::UpdateMapKeyValue(map<Type1, Type2>& data, Type1 key, Type2 value)
 	typename map <Type1, Type2>::iterator iter;
 	iter = data.find(key);
 
-	//DEBUG
+	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -372,14 +373,14 @@ int Merger::UpdateMapKeyValue(map<Type1, Type2>& data, Type1 key, Type2 value)
 
 	if (iter != data.end())
 	{
-		//key does exist, increment value by one
+		// key does exist, increment value by one
 		auto originalValue = iter->second;
 		originalValue += value;
 		iter->second = originalValue;
 	}
 	else
 	{
-		//key doesn't exist
+		// key doesn't exist
 		data.insert(pair <Type1, Type2>(key, value));
 	}
 
