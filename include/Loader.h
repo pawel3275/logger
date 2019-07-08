@@ -11,6 +11,7 @@
 #include "Config.h"
 #include "JsonOutput.h"
 #include "Shared.h"
+#include "Merger.h"
 
 using namespace std;
 
@@ -119,6 +120,9 @@ public:
 	void getDataFormatPatterns();
 	void splitRequest(string requestLine);
 	void parseDateFromFileToMap(string logLine);
+	void emitAllDataToFile();
+	void emptyLocalCache();
+	void emitLineBuffer();
 	//*****************************************//
 	//*****************************************//
 	string getDateFormatFromConfig();

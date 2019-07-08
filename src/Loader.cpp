@@ -26,6 +26,21 @@ Loader::Loader()
 
 /*********************************/
 /*Description:
+/*	Performs clear on a file making it empty.
+/*Input:
+/*	None.
+/*Output:
+/*	None
+/*********************************/
+void clearFile(string filename)
+{
+	fstream file;
+	file.open(filename, ios::trunc | ios::out);
+	file.close();
+}
+
+/*********************************/
+/*Description:
 /*	The main function of this class. It loades the lines from a given file.
 /*	If the dates are specified from which it should be loaded, then it loads
 /*	only those lines. It takes a line, cuts it into smaller pieces and moves it
@@ -49,13 +64,14 @@ int Loader::loadFromFileToMap()
 	}
 
 	string logLine;
+	string lastProcessedLine;
 	string startDate;
 	string endDate;
 	int lineBuffer = conf.m_lineBuffer;
-	int CurrentLine = 0;
+	int numberOfLine = 0;
 	bool loading = false;
 	bool loadAll = false;
-	int CountRegister = 0;
+	bool requiresMerge = false;
 
 	if (conf.m_dateEnd != "all" || conf.m_dateStart != "all")
 	{
@@ -91,6 +107,9 @@ int Loader::loadFromFileToMap()
 	// 2. Buffer taken from config is not exceeded
 	while (getline(inFile, logLine))
 	{
+		numberOfLine++;
+		lastProcessedLine = logLine;
+
 		if (conf.flags & conf.OpDEBUG)
 		{
 			cout << "DEBUG processing line: " << logLine << endl;
@@ -128,40 +147,27 @@ int Loader::loadFromFileToMap()
 			parseToCorrectContainer(logLine);
 		}
 
-		// whole buffer or file has been processed - time to spit data out;
-		if (inFile.eof())
+		// Below if is for cases when we exceed line buffer number specified
+		// inside config file. For each exceeding lineBuffer, we need to emit
+		// gathered data to tmp file, and merge it to already created output file
+		if (numberOfLine == lineBuffer || inFile.eof())
 		{
-			// To check how many times we have reached buffer
-			CountRegister++;
-			CurrentLine = 0;
-			break;
+			emitLineBuffer();
+			numberOfLine = 0;
+			requiresMerge = true;
 		}
+	}
 
-		CurrentLine++;
-
-		// whole file processed time to send success status
-		if (inFile.eof())
-		{
-			CountRegister += CurrentLine;
-			inFile.close();
-			break;
-		}
+	if (numberOfLine > 0 && requiresMerge)
+	{
+		emitLineBuffer();
+	}
+	else
+	{
+		emitAllDataToFile();
 	}
 
 	inFile.close();
-
-	if (conf.flags & conf.OpDEBUG)
-	{
-		cout << "DEBUG: Emit processed Data... ";
-	}
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_IPADDRESSEXT, m_ipAddress);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_DATEEXT, m_ipAddress);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_REQUESTTYPEEXT, m_requestType);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_REQUESTURLEXT, m_requestURL);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_STATUSEXT, m_status);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_BYTESSENTEXT, m_bytesSent);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_OPERATIONSYSYEMEXT, m_operatingSystem);
-	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_WEBBROWSEREXT, m_webBrowser);
 	
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -278,6 +284,38 @@ void Loader::getDataFormatPatterns()
 
 /*********************************/
 /*Description:
+/*	When lineBuffer counter reaches it's point there is need to empty it.
+/*	alas, this function performs emit of all gathered data to tmp, and
+/*	merges it to already created output file.
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
+void Loader::emitLineBuffer()
+{
+	Merger mergerObj;
+	Config &conf = Config::getInstance();
+	string originalOutputfilename = conf.m_outputFilename;
+
+	ofstream tmpFile;
+	tmpFile.open("tmpFile", ios::out);
+	conf.setOutputFilename("tmpFile");
+	emitAllDataToFile();
+	mergerObj.loadFromProcessedLog("tmpFile");
+	conf.m_outputFilename = originalOutputfilename;
+	mergerObj.loadFromProcessedLog(originalOutputfilename);
+	clearFile(originalOutputfilename);
+	mergerObj.SaveProcessedLog(originalOutputfilename);
+
+	tmpFile.close();
+	remove("tmpFile");
+
+	emptyLocalCache();
+}
+
+/*********************************/
+/*Description:
 /*	Because date comes as string which needs additional trimming
 /*	for the day month year etc. this whole trimming operation is done
 /*	here in this function.
@@ -330,6 +368,50 @@ void Loader::parseDateFromFileToMap(string logLine)
 	}
 
 	setDate(m_dateFormatPatterns, values);
+}
+
+/*********************************/
+/*Description:
+/*	Emits all gathered data to the output file, specified within 
+/*	the config file.
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
+void Loader::emitAllDataToFile()
+{
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_IPADDRESSEXT, m_ipAddress);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_DATEEXT, m_ipAddress);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_REQUESTTYPEEXT, m_requestType);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_REQUESTURLEXT, m_requestURL);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_STATUSEXT, m_status);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_BYTESSENTEXT, m_bytesSent);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_OPERATIONSYSYEMEXT, m_operatingSystem);
+	emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes::e_WEBBROWSEREXT, m_webBrowser);
+}
+
+/*********************************/
+/*Description:
+/*	Clears local cache and all maps within the object of loader.
+/*	all maps and containers used for emit, shall be emptied.
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
+void Loader::emptyLocalCache()
+{
+	m_date.clear();
+	m_ipAddress.clear();
+	m_requestType.clear();
+	m_requestURL.clear();
+	m_status.clear();
+	m_bytesSent.clear();
+	m_httpReferer.clear();
+	m_httpUserAgent.clear();
+	m_operatingSystem.clear();
+	m_webBrowser.clear();
 }
 
 /*********************************/
