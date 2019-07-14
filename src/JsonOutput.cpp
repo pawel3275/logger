@@ -208,13 +208,13 @@ int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 					// Scenario for month occuring in struct table.
 					// FindStruct with correct month
 					shared_ptr<date> pDateStruct(new date());
-					for (vector <shared_ptr<date>>::iterator Obj = pStructsToProcess.begin(); Obj != pStructsToProcess.end(); Obj++)
+					for (vector <shared_ptr<date>>::iterator Obj = pStructsToProcess.begin(); Obj != pStructsToProcess.end(); ++Obj)
 					{
 						// go through the unique months in unique objects pointer to find month-day values
 						int month = monthStrTomonthDec((*Obj)->month);
 						if (month == i)
 						{
-							pDateStruct = move(*Obj);
+							pDateStruct = *Obj;
 							break;
 						}
 					}

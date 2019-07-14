@@ -313,6 +313,11 @@ int Merger::updateDateStruct(string s_year, string s_month, string s_day, string
 	ptr->year = s_year;
 	ptr->month = s_month;
 
+	if (stoi(s_day) < 10)
+	{
+		s_day = "0" + s_day;
+	}
+
 	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](shared_ptr <date> const &arg) 
 							{ 
 								return ((ptr->year == arg->year) && (ptr->month == arg->month));

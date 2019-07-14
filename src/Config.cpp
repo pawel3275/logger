@@ -159,6 +159,25 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 	}
 	if (key == "OUTPUT_FILENAME" && value.length() > 0 && m_outputFilename.empty())
 	{
+		//TODO experimental, need flag to control this
+		try
+		{
+			using namespace std::experimental::filesystem;
+			{
+				path directory(value);
+				path p(value);
+				path dir = p.parent_path();
+				if (!exists(dir))
+				{
+					create_directories(dir);
+				}
+			}
+		}
+		catch (...)
+		{
+			cerr << "ERROR: ENABLE TO CREATE DIRECTORY FOR OUTPUT FILE" << endl;
+		}
+
 		m_outputFilename = value; // can be provided via cmd
 	}
 
