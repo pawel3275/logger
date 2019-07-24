@@ -150,7 +150,7 @@ int Loader::loadFromFileToMap()
 		// Below if is for cases when we exceed line buffer number specified
 		// inside config file. For each exceeding lineBuffer, we need to emit
 		// gathered data to tmp file, and merge it to already created output file
-		if (numberOfLine == lineBuffer || inFile.eof())
+		if (numberOfLine == lineBuffer)
 		{
 			emitLineBuffer();
 			numberOfLine = 0;

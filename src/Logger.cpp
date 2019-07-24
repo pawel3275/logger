@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
 		for (int i = 2; i < argc; i++)
 		{
 			string option = argv[i];
-			if (option.find(" --") == string::npos)
+			if (option.find("--") == string::npos)
 			{
 				// Save up files to merge
 				filesToMerge.push_back(option);
