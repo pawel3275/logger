@@ -29,14 +29,14 @@ void showHelp()
 			cout << "\t\t--conf \t\"Use own config file.\"" << endl;
 	cout << endl;
 	cout << "To parse logs within whole folder use:" << endl;
-		cout << "\t../logger parser -f <folderWithLogs>" << endl;
+		cout << "\t../logger --parser -f <folderWithLogs>" << endl;
 	cout << "If you would like also to merge them into one big json run:" << endl;
-		cout << "\t../logger parser -f <folderWithLogs> --mergeoutput" << endl;
+		cout << "\t../logger --parser -f <folderWithLogs> --mergeoutput" << endl;
 	cout << "Additional options you can provide while merging whole fodler are:" << endl;
 		cout << "\t-s <logExtension> - uses extension for logs provided by user. For example:" << endl;
-			cout << "\t\t../logger parser -f <folderWithLogs> --mergeoutput -s json" << endl;
+			cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput -s json" << endl;
 		cout << "\t--clear - leaves only one big json. For example:" << endl;
-			cout << "\t\t../logger parser -f <folderWithLogs> --mergeoutput --clear" << endl;
+			cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput --clear" << endl;
 
 }
 
@@ -46,12 +46,12 @@ void showHelpParser()
 	cout << "specified in a config file, and parses the lines into a JSON file." << endl;
 	cout << "Running \"../logger parser\" without any options makes parser to run in default mode." << endl;
 	cout << "Run:" << endl;
-		cout << "\t../logger parser" << endl;
-		cout << "\t../logger parser -i inputfile.txt -o output.txt [...]" << endl;
-		cout << "\t../logger parser [OPTIONS]" << endl;
+		cout << "\t../logger --parser" << endl;
+		cout << "\t../logger --parser -i inputfile.txt -o output.txt [...]" << endl;
+		cout << "\t../logger --parser [OPTIONS]" << endl;
 	cout << "Parser options:" << endl;
-		cout << "\t../logger parser -i [...] \t\"-i specifies input log filename and overrides the one from config\"" << endl;
-		cout << "\t../logger parser -o [...] \t\"-o specifies output filename and overrides the one from config\"" << endl;
+		cout << "\t../logger --parser -i [...] \t\"-i specifies input log filename and overrides the one from config\"" << endl;
+		cout << "\t../logger --parser -o [...] \t\"-o specifies output filename and overrides the one from config\"" << endl;
 }
 
 void showHelpMerger()
@@ -61,8 +61,8 @@ void showHelpMerger()
 	cout << "Output file is specified inside the config file." << endl;
 	cout << "Running \"../logger merger\" without any options makes merger to run in default mode." << endl;
 	cout << "Run:" << endl;
-		cout << "\t../logger merger" << endl;
-		cout << "\t../logger merger file1 file2 file3 [...] [OPTIONS]" << endl;
+		cout << "\t../logger --merger" << endl;
+		cout << "\t../logger --merger file1 file2 file3 [...] [OPTIONS]" << endl;
 }
 
 void showHelpConfig()
@@ -70,7 +70,7 @@ void showHelpConfig()
 	cout << "Config is a mandatory file used during program executions." << endl;
 	cout << "Presence of this file is obligatory. As arguments are loaded from it." << endl;
 	cout << "Run:" << endl;
-		cout << "\t../logger config [OPTIONS] ..." << endl;
+		cout << "\t../logger --config [OPTIONS] ..." << endl;
 	cout << "Config options:" << endl;
 		cout << "\t--genNew\t\"Generate new default config file\"" << endl;
 }
@@ -81,9 +81,9 @@ void showHelpUsage()
 	cout << "../logger [MODE] [OPTIONS] ..." << endl;
 	cout << "Possible main modes: " << endl;
 		cout << "\tparser" << endl;
-			cout << "\t\t../logger parser [OPTIONS]" << endl;
+			cout << "\t\t../logger --parser [OPTIONS]" << endl;
 		cout << "\tmerger" << endl;
-			cout << "\t\t../logger merger [OPTIONS]" << endl;
+			cout << "\t\t../logger --merger [OPTIONS]" << endl;
 }
 
 
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < argc; ++i)
 		{
 			options.push_back(argv[i]);
-			if (options[i].length() > 2)
+			if (options[i].find("--") != string::npos)
 			{
 				transform(options[i].begin(), options[i].end(), options[i].begin(), ::toupper);
 			}
@@ -112,22 +112,22 @@ int main(int argc, char *argv[])
 		}
 		else if (options[1] == "--HH" && argc > 2)
 		{
-			if (options[2] == "PARSER")
+			if (options[2] == "--PARSER")
 			{
 				showHelpParser();
 				return 0;
 			}
-			else if (options[2] == "MERGER")
+			else if (options[2] == "--MERGER")
 			{
 				showHelpMerger();
 				return 0;
 			}
-			else if (options[2] == "CONFIG")
+			else if (options[2] == "--CONFIG")
 			{
 				showHelpConfig();
 				return 0;
 			}
-			else if (options[2] == "USAGE")
+			else if (options[2] == "--USAGE")
 			{
 				showHelpUsage();
 				return 0;
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
 	conf.configSetup();
 
-	if (argc > 1 && options[1] == "PARSER")
+	if (argc > 1 && options[1] == "--PARSER")
 	{
 		if (find(options.begin(), options.end(), "-i") != options.end()) // i for in
 		{
@@ -311,7 +311,7 @@ int main(int argc, char *argv[])
 		Loader &loaderInst = Loader::getInstance();
 		loaderInst.loadFromFileToMap();
 	}
-	else if (argc > 1 && options[1] == "MERGER")
+	else if (argc > 1 && options[1] == "--MERGER")
 	{
 		Merger mergerObj;
 		vector <string> filesToMerge;
@@ -323,6 +323,11 @@ int main(int argc, char *argv[])
 			{
 				// Save up files to merge
 				filesToMerge.push_back(option);
+			}
+			else
+			{
+				//stop saving files to merge, this can occur when user is specifying own config file.
+				break;
 			}
 		}
 

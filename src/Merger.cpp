@@ -86,16 +86,23 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 	if (sourceOutputFile.empty())
 	{
 		inFile.open(m_sourceOutputFile.c_str(), ios::in);
+
+		if (!inFile.is_open())
+		{
+			cerr << "Error: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
+		}
 	}
 	else
 	{
 		inFile.open(sourceOutputFile.c_str(), ios::in);
+
+		if (!inFile.is_open())
+		{
+			cerr << "Error: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
+		}
 	}
 
-	if (!inFile.is_open())
-	{
-		cerr << "Error: Unable to open file during merge: " << &inFile << endl;
-	}
+
 	string inLine;
 	string currentVar;
 	bool loading = false;
