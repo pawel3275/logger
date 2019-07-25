@@ -798,7 +798,7 @@ void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 	shared_ptr<date> ptr(new date());
 	ptr->year = m_date["YYYY"];
 	ptr->month = m_date["MM"];
-	mapInsertion(move(ptr->day), m_date["DD"]);
+	mapInsertion(ptr->day, m_date["DD"]);
 
 	vector<shared_ptr<date>>::iterator foundPosition;
 	foundPosition = find_if(m_dateInstancesPTR.begin(), m_dateInstancesPTR.end(), [ptr](shared_ptr <date> const &arg) 
