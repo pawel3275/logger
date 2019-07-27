@@ -37,6 +37,7 @@ public:
 	void setOutputFilename(string newOutputFilename);
 	void setLogFilename(string newLogFilename);
 	void setConfigFilename(string newConfigGilename);
+	void verifyAndSetLogFormat(string key);
 	static void genDefaultConfigFile();
 	static void split(const string &line, char delim, vector<string> &elements);
 
@@ -57,6 +58,8 @@ protected:
 	string m_dateStart;
 	string m_dateEnd;
 	string m_outputFilename;
+	string m_defaultLogFormat;
+	vector <string> m_LogFormat;
 
 	int m_lineBuffer;
 	char m_separator;

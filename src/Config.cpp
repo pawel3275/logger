@@ -12,7 +12,7 @@ using namespace std;
 /*********************************/
 Config::Config()
 {
-
+	m_defaultLogFormat = "$remote_addr\"$remote_user\"$time_local\"$request\"$status\"$body_bytes_sent\"$http_referer\"$http_user_agent;";
 }
 
 /*********************************/
@@ -181,6 +181,11 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 		m_outputFilename = value; // can be provided via cmd
 	}
 
+	if (key == "NGINX_LOG_FORMAT" && value.length() > 0)
+	{
+		verifyAndSetLogFormat(value);
+	}
+
 	cout << "Config: \"" << key << "\" equals to: \"" << value << "\"" << endl;
 	return 0;
 }
@@ -258,6 +263,31 @@ void Config::setConfigFilename(string newConfigGilename)
 	}
 }
 
+void Config::verifyAndSetLogFormat(string value)
+{
+	value.erase(remove(value.begin(), value.end(), '$'), value.end());
+	value.erase(remove(value.begin(), value.end(), ';'), value.end());
+
+	size_t position = value.find(this->m_separator);
+	if (position == string::npos)
+	{
+		cerr << "Unknown log format using default one: " << m_defaultLogFormat << endl;
+		value = m_defaultLogFormat;
+		value.erase(remove(value.begin(), value.end(), '$'), value.end());
+		value.erase(remove(value.begin(), value.end(), ';'), value.end());
+		position = value.find(this->m_separator);
+	}
+
+	while (position != string::npos)
+	{
+		m_LogFormat.push_back(value.substr(0, position));
+		&value.erase(0, position + 1);
+		position = value.find(this->m_separator);
+	}
+
+	m_LogFormat.push_back(value);
+}
+
 /*********************************/
 /*Description:
 /*	When one of the arguments as input is --genNew for config
@@ -271,19 +301,18 @@ void Config::genDefaultConfigFile()
 {
 	ofstream outfile("config.cfg", ios::trunc | ios::out);
 	{
-		outfile << "# This is example Config file of the Merger "                                                                                        << endl;
+		outfile << "# This is example Config file of the Merger "                                                                                       << endl;
 		outfile                                                                                                                                         << endl;
-		outfile << "# State how many lines should be processed in one batch, useful for memory save up,"													<< endl;
-		outfile << "# but increases the I/O number of operations needed"																					<< endl;
+		outfile << "# State how many lines should be processed in one batch, useful for memory save up,"												<< endl;
+		outfile << "# but increases the I/O number of operations needed"																				<< endl;
 		outfile << "LineBuffer = 20000"																													<< endl;
 		outfile																																			<< endl;
-		outfile << "# PutYour nGinnx log format from your setting format here"																		    << endl;
-		outfile << "# if empty then default one shall be taken"																							<< endl;
-		outfile << "# !!!SUPPORTING DIFFERENT FORMATS OPTION IS DEPRECIATED FOR NOW!!!"																	<< endl;
-		outfile << "nginx_log_format = $remote_addr\"$remote_user\"$time_local\"$request\"$status\"$body_bytes_sent\"$http_referer\"$http_user_agent;"  << endl;
-		outfile																																			<< endl;
 		outfile << "# State The separator char in logs"																									<< endl;
-		outfile << "Separator = \""																									                    << endl;
+		outfile << "Separator = \""																														<< endl;
+		outfile																																			<< endl;
+		outfile << "# PutYour nGinnx log format from your setting format here"																		    << endl;
+		outfile << "# if empty then default one shall be taken. Mandatory fields are listed below."														<< endl;
+		outfile << "nginx_log_format = $remote_addr\"$remote_user\"$time_local\"$request\"$status\"$body_bytes_sent\"$http_referer\"$http_user_agent;"  << endl;
 		outfile																																			<< endl;
 		outfile << "# state the default log filename from which data should be processed"																<< endl;
 		outfile << "Log_filename = C:\\Users\\<user>\\logs\\example.log"																				<< endl;
@@ -291,8 +320,8 @@ void Config::genDefaultConfigFile()
 		outfile << "# format of the date"																												<< endl;
 		outfile << "Date_format = Day/Month/Year:hour:minute:second timezone"																			<< endl;
 		outfile																																			<< endl;
-		outfile << "# State from which date period the data should be processed"																			<< endl;
-		outfile << "# Possible values : \"all\" | date in format \"DD/MM/YYYY\""																			<< endl;
+		outfile << "# State from which date period the data should be processed"																		<< endl;
+		outfile << "# Possible values : \"all\" | date in format \"DD/MM/YYYY\""																		<< endl;
 		outfile << "Date_start = all"																													<< endl;
 		outfile << "Date_end = all"																														<< endl;
 		outfile																																			<< endl;

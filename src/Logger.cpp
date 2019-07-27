@@ -112,22 +112,22 @@ int main(int argc, char *argv[])
 		}
 		else if (options[1] == "--HH" && argc > 2)
 		{
-			if (options[2] == "--PARSER")
+			if (options[2] == "parser")
 			{
 				showHelpParser();
 				return 0;
 			}
-			else if (options[2] == "--MERGER")
+			else if (options[2] == "merger")
 			{
 				showHelpMerger();
 				return 0;
 			}
-			else if (options[2] == "--CONFIG")
+			else if (options[2] == "config")
 			{
 				showHelpConfig();
 				return 0;
 			}
-			else if (options[2] == "--USAGE")
+			else if (options[2] == "usage")
 			{
 				showHelpUsage();
 				return 0;
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 
 	if (find(options.begin(), options.end(), "--CONF") != options.end())
 	{
-		ptrdiff_t pos = find(options.begin(), options.end(), "--CONF") - options.begin();
+		size_t pos = find(options.begin(), options.end(), "--CONF") - options.begin();
 		if (pos <= options.size())
 		{
 			conf.setConfigFilename(options[pos+1]);
@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
 			else
 			{
 				cerr << "ERROR: Provide path to folder! Example:" << endl;
-				cerr << "\t../logger <ARG [PARSER]> -f C:\logs\ " << endl;
+				cerr << "\t../logger <ARG [PARSER]> -f C:\\logs\\" << endl;
 				return 0;
 			}
 		}

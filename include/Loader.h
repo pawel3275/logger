@@ -21,7 +21,7 @@ namespace defaultNginxFormats
 	enum  defaultNginxFormatsTypes
 	{
 		e_IPADDRESS = 1,
-		e_RESERVED0 = 2, 
+		e_REMOTEUSER = 2,
 		e_DATE = 3,
 		e_REQUESTTYPE = 4,
 		e_STATUS = 5,
@@ -49,7 +49,7 @@ namespace defaultNginxFormats
 	static const defaultNginxFormatsTypes allDefaultNginxFormatsTypes[] =
 	{
 		e_IPADDRESS,
-		e_RESERVED0,
+		e_REMOTEUSER,
 		e_DATE,
 		e_REQUESTTYPE,
 		e_STATUS,
@@ -67,7 +67,6 @@ namespace defaultNginxFormats
 		e_REQUESTTYPEEXT,
 		e_STATUSEXT,
 		e_BYTESSENTEXT,
-		//e_RESERVED1,
 		e_HTTPREFEREREXT,
 		e_HTTPUSERAGENTEXT,
 		e_OPERATIONSYSYEMEXT,

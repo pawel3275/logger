@@ -191,7 +191,6 @@ int Loader::parseToCorrectContainer(string logLine)
 	size_t position = 0;
 	char separator = conf.m_separator;
 	string logLineEntryData;
-
 	
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -200,40 +199,45 @@ int Loader::parseToCorrectContainer(string logLine)
 	}
 
 	// Split line and add to correct maps
-	for (const auto format : defaultNginxFormats::allDefaultNginxFormatsTypes)
+	for (auto format : conf.m_LogFormat)
 	{
 		position = logLine.find(separator);
-
 		logLineEntryData = logLine.substr(0, position);
-		switch (format)
+		transform(format.begin(), format.end(), format.begin(), ::toupper);
+
+		if (format == "REMOTE_ADDR")
 		{
-		case defaultNginxFormats::e_IPADDRESS:
 			m_logLineValues["e_IPADDRESS"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_RESERVED0:
-			m_logLineValues["e_RESERVED0"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_DATE:
-			m_logLineValues["e_DATE"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_REQUESTTYPE:
-			m_logLineValues["e_REQUESTTYPE"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_STATUS:
-			m_logLineValues["e_STATUS"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_BYTESSENT:
-			m_logLineValues["e_BYTESSENT"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_HTTPREFERER:
-			m_logLineValues["e_HTTPREFERER"] = logLineEntryData;
-			break;
-		case defaultNginxFormats::e_HTTPUSERAGENT:
-			m_logLineValues["e_HTTPUSERAGENT"] = logLineEntryData;
-			break;
-		default:
-			break;
 		}
+		else if (format == "REMOTE_USER")
+		{
+			m_logLineValues["e_REMOTEUSER"] = logLineEntryData;
+		}
+		else if (format == "TIME_LOCAL")
+		{
+			m_logLineValues["e_DATE"] = logLineEntryData;
+		}
+		else if (format == "REQUEST")
+		{
+			m_logLineValues["e_REQUESTTYPE"] = logLineEntryData;
+		}
+		else if (format == "STATUS")
+		{
+			m_logLineValues["e_STATUS"] = logLineEntryData;
+		}
+		else if (format == "BODY_BYTES_SENT")
+		{
+			m_logLineValues["e_BYTESSENT"] = logLineEntryData;
+		}
+		else if (format == "HTTP_REFERER")
+		{
+			m_logLineValues["e_HTTPREFERER"] = logLineEntryData;
+		}
+		else if (format == "HTTP_USER_AGENT")
+		{
+			m_logLineValues["e_HTTPUSERAGENT"] = logLineEntryData;
+		}
+
 		logLine.erase(0, position + 1); // 1 stands for separator length
 	}
 
@@ -885,7 +889,7 @@ int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTyp
 		json1.writeDataToFile(data);
 		break;
 	}
-	case defaultNginxFormats::e_RESERVED0:
+	case defaultNginxFormats::e_REMOTEUSER:
 	{
 		break;
 	}
