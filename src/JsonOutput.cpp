@@ -174,7 +174,7 @@ int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 		vector <string> uniqueYearsToProcess;
 		vector<string>::iterator iterato;
 		// Find unique values of years in dateInstances.
-		for (vector <shared_ptr<date>>::iterator pObj = move(m_dateInstancesPTR.begin()); pObj != move(m_dateInstancesPTR.end()); pObj++)
+		for (vector <shared_ptr<date>>::iterator pObj = m_dateInstancesPTR.begin(); pObj != m_dateInstancesPTR.end(); pObj++)
 		{
 			iterato = find(uniqueYearsToProcess.begin(), uniqueYearsToProcess.end(), (*pObj)->year);
 			if (iterato == uniqueYearsToProcess.end())
@@ -194,7 +194,7 @@ int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 				if ((*pObj)->year == *vec)
 				{
 					uniqueMonths.push_back(monthStrTomonthDec((*pObj)->month));
-					pStructsToProcess.push_back(move(*pObj));
+					pStructsToProcess.push_back(*pObj);
 				}
 			}
 
