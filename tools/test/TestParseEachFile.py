@@ -2,10 +2,10 @@ import os
 from os import path
 import sys
 import subprocess
-import difflib
-import filecmp
+from colorama import Fore, Back, Style
 
-referenceFiles = [
+
+referenceParseFiles = [
     "2017_05_piknik_blog1.access.log.json",
     "2017_06_piknik_blog1.access.log.json",
     "2017_07_piknik_blog1.access.log.json",
@@ -27,7 +27,7 @@ referenceFiles = [
     "2018_12_piknik_blog1.access.log.json",
     "2019_01_piknik_blog1.access.log.json",
     "2019_02_piknik_blog1.access.log.json",
-    "whole_directory_merge.json"
+    "AllInOne.log.json"
 ]
 
 testFiles = [
@@ -65,19 +65,10 @@ def compare_two_files(referencefile, testfile):
             if not line1 == line2:
                 status = False
 
-    # with open(referencefile) as reference:
-    #    reference_text = reference.read()
-    # with open(testfile) as testfile:
-    #    testfile_text = testfile.read()
-    # Find and print the diff:
-    # for line in difflib.unified_diff(reference_text, testfile_text, fromfile=referencefile, tofile=testfile, lineterm=''):
-    #    print(line)
-
     if not status:
         print("Mismatch for File:", referencefile, "-->", testfile)
 
     return status
-
 
 
 def prepare_to_test():
@@ -98,7 +89,7 @@ loggerbinaryfile = sys.argv[1]
 counter = 0
 for x in testFiles:
     testCaseStatus = False
-    print("Test Case:", counter)
+    print("Test Case", counter, ":")
     outputFilename = "PARSED_" + str(counter) + "_" + x
     testFilepath = path.abspath(path.join(currentPath, "..", "..", "example_logs", x))
 
@@ -106,23 +97,27 @@ for x in testFiles:
         print("No test file found:", testFilepath)
         continue
     # Parse file
+    print("Invoke command:", loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename)
     process = subprocess.Popen([loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename])
     process.wait()
 
     outputFilepath = os.path.dirname(loggerbinaryfile)
     fullOutputFilepath = outputFilename
-    referenceFilepath = currentPath + "/reference data/" + referenceFiles[counter]
+    referenceFilepath = currentPath + "/reference data/" + referenceParseFiles[counter]
 
     testCaseStatus = compare_two_files(referenceFilepath, fullOutputFilepath)
 
-    if testCaseStatus:
-        os.remove(fullOutputFilepath)
+    #if testCaseStatus:
+        #os.remove(fullOutputFilepath)
 
+    print(Style.RESET_ALL)
     if testCaseStatus:
-        print("Test Case: \n", counter)
-        print("\033[1;32;40m PASSED")
+        print(Fore.GREEN)
+        print("Test Case: ", counter, "PASSED")
     else:
-        print("\033[1;31;40m FAILED")
+        print(Fore.RED)
+        print("Test Case: ", counter, "FAILED")
+    print(Style.RESET_ALL)
     counter += 1
 
 
