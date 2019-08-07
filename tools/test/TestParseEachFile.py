@@ -107,8 +107,8 @@ for x in testFiles:
 
     testCaseStatus = compare_two_files(referenceFilepath, fullOutputFilepath)
 
-    #if testCaseStatus:
-        #os.remove(fullOutputFilepath)
+    if testCaseStatus:
+        os.remove(fullOutputFilepath)
 
     print(Style.RESET_ALL)
     if testCaseStatus:
