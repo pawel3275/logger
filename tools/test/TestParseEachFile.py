@@ -30,6 +30,10 @@ referenceParseFiles = [
     "AllInOne.log.json"
 ]
 
+referenceMergeFiles = [
+
+]
+
 testFiles = [
     "2017_05_piknik_blog1.access.log",
     "2017_06_piknik_blog1.access.log",
@@ -81,44 +85,61 @@ def prepare_to_test():
     configprocess.wait()
 
 
-statusGeneral = True
+def TEST_parse_all_files():
+    counter = 0
+    FailedTests = 0
+    PassedTests = 0
+    for x in testFiles:
+        testCaseStatus = False
+        print("Test Case", counter, ":")
+        outputFilename = "PARSED_" + str(counter) + "_" + x
+        testFilepath = path.abspath(path.join(currentPath, "..", "..", "example_logs", x))
+
+        if not os.path.exists(testFilepath):
+            print("No test file found:", testFilepath)
+            continue
+        # Parse file
+        print("Invoke command:", loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename)
+        process = subprocess.Popen([loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename])
+        process.wait()
+
+        outputFilepath = os.path.dirname(loggerbinaryfile)
+        fullOutputFilepath = outputFilename
+        referenceFilepath = currentPath + "/reference data/parser/" + referenceParseFiles[counter]
+
+        testCaseStatus = compare_two_files(referenceFilepath, fullOutputFilepath)
+
+        if testCaseStatus:
+            os.remove(fullOutputFilepath)
+
+        print(Style.RESET_ALL)
+        if testCaseStatus:
+            PassedTests +=1
+            print(Fore.GREEN)
+            print("Test Case: ", counter, "PASSED")
+        else:
+            FailedTests += 1
+            print(Fore.RED)
+            print("Test Case: ", counter, "FAILED")
+        print(Style.RESET_ALL)
+        print("Passed: ", PassedTests, " Failed: ", FailedTests)
+        counter += 1
+
+
+#def TEST_merge_files():
+    # do stuff
+
+
+# Do all necessary test preparations
 prepare_to_test()
 currentPath = path.dirname(__file__)
 loggerbinaryfile = sys.argv[1]
 
-counter = 0
-for x in testFiles:
-    testCaseStatus = False
-    print("Test Case", counter, ":")
-    outputFilename = "PARSED_" + str(counter) + "_" + x
-    testFilepath = path.abspath(path.join(currentPath, "..", "..", "example_logs", x))
+# Start Off by parsing all files in example data and compare it to reference data
+TEST_parse_all_files()
 
-    if not os.path.exists(testFilepath):
-        print("No test file found:", testFilepath)
-        continue
-    # Parse file
-    print("Invoke command:", loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename)
-    process = subprocess.Popen([loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename])
-    process.wait()
 
-    outputFilepath = os.path.dirname(loggerbinaryfile)
-    fullOutputFilepath = outputFilename
-    referenceFilepath = currentPath + "/reference data/" + referenceParseFiles[counter]
 
-    testCaseStatus = compare_two_files(referenceFilepath, fullOutputFilepath)
-
-    if testCaseStatus:
-        os.remove(fullOutputFilepath)
-
-    print(Style.RESET_ALL)
-    if testCaseStatus:
-        print(Fore.GREEN)
-        print("Test Case: ", counter, "PASSED")
-    else:
-        print(Fore.RED)
-        print("Test Case: ", counter, "FAILED")
-    print(Style.RESET_ALL)
-    counter += 1
 
 
 
