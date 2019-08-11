@@ -89,7 +89,7 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 
 		if (!inFile.is_open())
 		{
-			cerr << "Error: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
+			cerr << "ERROR: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
 		}
 	}
 	else
@@ -98,7 +98,7 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 
 		if (!inFile.is_open())
 		{
-			cerr << "Error: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
+			cerr << "ERROR: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
 		}
 	}
 

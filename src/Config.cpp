@@ -68,7 +68,10 @@ int Config::loadConfigFromFile()
 
 	if (!inFile.is_open())
 	{
-		cerr << "DEBUG: searching for config... " << endl;
+		if (flags & OpDEBUG)
+		{
+			cout << "DEBUG: searching for config... " << endl;
+		}
 		// Check for default lower case filename...
 		transform(m_configFilename.begin(), m_configFilename.end(), m_configFilename.begin(), ::tolower);
 		inFile.open(m_configFilename.c_str());
@@ -186,7 +189,10 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 		verifyAndSetLogFormat(value);
 	}
 
-	cout << "Config: \"" << key << "\" equals to: \"" << value << "\"" << endl;
+	if (flags & OpDEBUG)
+	{
+		cout << "Config: \"" << key << "\" equals to: \"" << value << "\"" << endl;
+	}
 	return 0;
 }
 
@@ -203,7 +209,7 @@ void Config::configSetup()
 	int status;
 	if (m_configFilename.empty())
 	{
-		cout << "Debug: No config file specified, using default one: ";
+		cout << "No config file specified, using default one: ";
 		cout << "config.cfg" << endl;
 		m_configFilename = "config.cfg";
 
@@ -271,7 +277,7 @@ void Config::verifyAndSetLogFormat(string value)
 	size_t position = value.find(this->m_separator);
 	if (position == string::npos)
 	{
-		cerr << "Unknown log format using default one: " << m_defaultLogFormat << endl;
+		cout << "INFO: Unknown log format using default one: " << m_defaultLogFormat << endl;
 		value = m_defaultLogFormat;
 		value.erase(remove(value.begin(), value.end(), '$'), value.end());
 		value.erase(remove(value.begin(), value.end(), ';'), value.end());

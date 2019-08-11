@@ -155,6 +155,11 @@ int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 	Config &conf = Config::getInstance();
 	string outputFilename = conf.m_outputFilename;
 
+	if (m_dateInstancesPTR.empty())
+	{
+		return 0;
+	}
+
 	if (outputFilename.empty())
 	{
 		cout << "Error: No outputFilename specified in config" << endl;
@@ -285,9 +290,14 @@ int JsonOutput::writeVarsToFile(map <string, map <string, string> > varData)
 		cout << "outputFilename->" << outputFilename << endl;
 	}
 
+	if (varData.empty())
+	{
+		return 0;
+	}
+
 	if (outputFilename.empty())
 	{
-		cout << "Error: No outputFilename specified in config" << endl;
+		cerr << "ERROR: No outputFilename specified in config" << endl;
 		return 1;
 	}
 

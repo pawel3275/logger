@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		cerr << "No mode specified!" << endl;
+		cerr << "ERROR: No mode specified!" << endl;
 		showHelp();
 		return 0;
 	}

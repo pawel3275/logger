@@ -60,7 +60,7 @@ int Loader::loadFromFileToMap()
 	inFile.open(logFilename.c_str(), ios::in);
 	if (!inFile.is_open())
 	{
-		cerr << "Error: Unable to open log file: " << logFilename << endl;
+		cerr << "ERROR: Unable to open log file: " << logFilename << endl;
 	}
 
 	string logLine;
