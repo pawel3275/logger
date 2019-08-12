@@ -95,11 +95,6 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 	else
 	{
 		inFile.open(sourceOutputFile.c_str(), ios::in);
-
-		if (!inFile.is_open())
-		{
-			cerr << "ERROR: Unable to open file during merge: " << sourceOutputFile.c_str() << endl;
-		}
 	}
 
 
