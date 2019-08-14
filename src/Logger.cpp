@@ -27,16 +27,10 @@ void showHelp()
 			cout << "\t\t--perfo\t\"Run in performance mode to check time measurement\"" << endl;
 			cout << "\t\t--noOut\t\"No Output files will be generated.\"" << endl;
 			cout << "\t\t--conf \t\"Use own config file.\"" << endl;
+
 	cout << endl;
-	cout << "To parse logs within whole folder use:" << endl;
-		cout << "\t../logger --parser -f <folderWithLogs>" << endl;
-	cout << "If you would like also to merge them into one big json run:" << endl;
-		cout << "\t../logger --parser -f <folderWithLogs> --mergeoutput" << endl;
-	cout << "Additional options you can provide while merging whole fodler are:" << endl;
-		cout << "\t-s <logExtension> - uses extension for logs provided by user. For example:" << endl;
-			cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput -s json" << endl;
-		cout << "\t--clear - leaves only one big json. For example:" << endl;
-			cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput --clear" << endl;
+	cout << "To generate default config file please invoke:" << endl;
+		cout << "\t../logger --config --genNew" << endl;
 
 }
 
@@ -45,6 +39,8 @@ void showHelpParser()
 	cout << "Parser is a mode, which takes as input the TXT file" << endl;
 	cout << "specified in a config file, and parses the lines into a JSON file." << endl;
 	cout << "Running \"../logger parser\" without any options makes parser to run in default mode." << endl;
+	
+	cout << endl;
 	cout << "Run:" << endl;
 		cout << "\t../logger --parser" << endl;
 		cout << "\t../logger --parser -i inputfile.txt -o output.txt [...]" << endl;
@@ -52,6 +48,19 @@ void showHelpParser()
 	cout << "Parser options:" << endl;
 		cout << "\t../logger --parser -i [...] \t\"-i specifies input log filename and overrides the one from config\"" << endl;
 		cout << "\t../logger --parser -o [...] \t\"-o specifies output filename and overrides the one from config\"" << endl;
+	
+	cout << endl;
+	cout << "To parse logs within whole folder use:" << endl;
+		cout << "\t../logger --parser -f <folderWithLogs>" << endl;
+	cout << endl;
+	cout << "If you would like also to merge them into one big json run:" << endl;
+		cout << "\t../logger --parser -f <folderWithLogs> --mergeoutput" << endl;
+	cout << endl;
+	cout << "Additional options you can provide while merging whole folder are:" << endl;
+		cout << "\t-s <logExtension> - uses extension for logs provided by user. For example:" << endl;
+		cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput -s json" << endl;
+		cout << "\t--clear - leaves only one big json. For example:" << endl;
+		cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput --clear" << endl;
 }
 
 void showHelpMerger()
@@ -67,7 +76,7 @@ void showHelpMerger()
 
 void showHelpConfig()
 {
-	cout << "Config is a mandatory file used during program executions." << endl;
+	cout << "Config is a mandatory file used during program execution." << endl;
 	cout << "Presence of this file is obligatory. As arguments are loaded from it." << endl;
 	cout << "Run:" << endl;
 		cout << "\t../logger --config [OPTIONS] ..." << endl;
@@ -84,79 +93,17 @@ void showHelpUsage()
 			cout << "\t\t../logger --parser [OPTIONS]" << endl;
 		cout << "\tmerger" << endl;
 			cout << "\t\t../logger --merger [OPTIONS]" << endl;
+	cout << "Please refer to specific modes via \"--hh ARG\" to get more details." << endl;
 }
 
-
-
-int main(int argc, char *argv[])
+void globalFlagSetup(vector <string> options)
 {
-	auto startClock = chrono::steady_clock::now();
 	Config &conf = Config::getInstance();
-	vector <string> options;
-
-	if (argc > 1)
-	{
-		for (int i = 0; i < argc; ++i)
-		{
-			options.push_back(argv[i]);
-			if (options[i].find("--") != string::npos)
-			{
-				transform(options[i].begin(), options[i].end(), options[i].begin(), ::toupper);
-			}
-		}
-
-		if (options[1] == "--HELP" && argc <= 2)
-		{
-			showHelp();
-			return 0;
-		}
-		else if (options[1] == "--HH" && argc > 2)
-		{
-			if (options[2] == "parser")
-			{
-				showHelpParser();
-				return 0;
-			}
-			else if (options[2] == "merger")
-			{
-				showHelpMerger();
-				return 0;
-			}
-			else if (options[2] == "config")
-			{
-				showHelpConfig();
-				return 0;
-			}
-			else if (options[2] == "usage")
-			{
-				showHelpUsage();
-				return 0;
-			}
-			else
-			{
-				cout << "Unknown option: " << argv[2] << endl;
-				showHelp();
-				return 0;
-			}
-		}
-		else if(options[1] == "--HH" && argc == 2)
-		{
-			cout << "No specified option!" << endl;
-			showHelp();
-			return 0;
-		}
-	}
-	else
-	{
-		cout << "Too few arguments! Type --help for options." << endl;
-		return 0;
-	}
-
 	if (find(options.begin(), options.end(), "--GENNEW") != options.end())
 	{
 		cout << "Generating new default config file." << endl;
 		Config::genDefaultConfigFile();
-		return 0;
+		exit(0);
 	}
 	if (find(options.begin(), options.end(), "--DEBUG") != options.end())
 	{
@@ -173,175 +120,286 @@ int main(int argc, char *argv[])
 		cout << "Running without output flag." << endl;
 		conf.flags = conf.OpNOOUT;
 	}
+}
 
+void setConfigFilename(vector <string> options)
+{
+	Config &conf = Config::getInstance();
 	if (find(options.begin(), options.end(), "--CONF") != options.end())
 	{
 		size_t pos = find(options.begin(), options.end(), "--CONF") - options.begin();
 		if (pos <= options.size())
 		{
-			conf.setConfigFilename(options[pos+1]);
+			conf.setConfigFilename(options[pos + 1]);
 		}
 		else
 		{
 			cerr << "ERROR: Provide Config file! Example:" << endl;
 			cerr << "\t../logger <ARG> --conf myconfig.cfg ..." << endl;
-			return 0;
+			exit(-1);
+		}
+	}
+}
+
+void setParserInputOutputFilename(vector <string> options)
+{
+	Config &conf = Config::getInstance();
+	if (find(options.begin(), options.end(), "-i") != options.end()) // i for in
+	{
+		size_t pos = find(options.begin(), options.end(), "-i") - options.begin();
+		if (pos <= options.size())
+		{
+			conf.setLogFilename(options[pos + 1]);
+		}
+		else
+		{
+			cerr << "ERROR: Provide input file! Example:" << endl;
+			cerr << "\t../logger <ARG [PARSER]> -f mylog.txt ..." << endl;
+			exit(-1);
 		}
 	}
 
+	if (find(options.begin(), options.end(), "-o") != options.end()) //  o for out
+	{
+		size_t pos = find(options.begin(), options.end(), "-o") - options.begin();
+		if (pos <= options.size())
+		{
+			conf.setOutputFilename(options[pos + 1]);
+		}
+		else
+		{
+			cerr << "ERROR: Provide output filename! Example:" << endl;
+			cerr << "\t../logger <ARG [PARSER]> -o myoutput.txt ..." << endl;
+			exit(-1);
+		}
+	}
+}
+
+void parseWholeFolderOption(vector <string> options)
+{
+	Config &conf = Config::getInstance();
+
+	size_t pos = find(options.begin(), options.end(), "-f") - options.begin();
+	size_t suffixPos = find(options.begin(), options.end(), "-s") - options.begin(); //for user extension of file
+	size_t shouldMerge = find(options.begin(), options.end(), "--MERGEOUTPUT") - options.begin();
+	vector <string> filesToMerge;
+	if (pos <= options.size())
+	{
+		vector <string> filesToParse;
+		string path = options[pos + 1];
+
+		for (const auto & entry : std::experimental::filesystem::directory_iterator(path))
+		{
+			filesToParse.push_back(entry.path().string());
+		}
+
+		for (auto & file : filesToParse)
+		{
+			string outputLogFilename;
+			if (suffixPos < options.size())
+			{
+				string extension = options[suffixPos + 1];
+				transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+				outputLogFilename = file + "." + extension;
+			}
+			else
+			{
+				outputLogFilename = file + ".json";
+			}
+			conf.setLogFilename(file);
+			conf.setOutputFilename(outputLogFilename);
+			Loader &loaderInst = Loader::getInstance();
+			loaderInst.loadFromFileToMap();
+			loaderInst.emptyLocalCache();
+			filesToMerge.push_back(outputLogFilename);
+		}
+		if (shouldMerge <= options.size())
+		{
+			Merger mergerObj;
+			for (auto & file : filesToMerge)
+			{
+				mergerObj.loadFromProcessedLog(file);
+			}
+			if (find(options.begin(), options.end(), "-o") != options.end())
+			{
+				size_t pos = find(options.begin(), options.end(), "-o") - options.begin();
+				if (pos <= options.size())
+				{
+					conf.setOutputFilename(options[pos + 1]);
+					mergerObj.SaveProcessedLog(options[pos + 1]);
+				}
+				else
+				{
+					cerr << "ERROR: No filename for output provided for argument -o" << endl;
+					cerr << "Using default output filename: whole_default_merge.json" << endl;
+				}
+			}
+			else
+			{
+				conf.setOutputFilename("whole_default_merge.json");
+				mergerObj.SaveProcessedLog("whole_default_merge.json");
+			}
+		}
+
+		//If option clear is specified then logger will produce only one output file with whole merge.
+		if (find(options.begin(), options.end(), "--CLEAR") != options.end())
+		{
+			for (auto & file : filesToMerge)
+			{
+				remove(file.c_str());
+			}
+		}
+	}
+	else
+	{
+		cerr << "ERROR: Provide path to folder! Example:" << endl;
+		cerr << "\t../logger <ARG [PARSER]> -f C:\\logs\\" << endl;
+		exit(-1);
+	}
+}
+
+void useDefaultParserMode()
+{
+	Loader &loaderInst = Loader::getInstance();
+	loaderInst.loadFromFileToMap();
+}
+
+void useDefaultMergerMode(vector <string> options)
+{
+	Merger mergerObj;
+	vector <string> filesToMerge;
+	string empty;
+	for (unsigned int i = 2; i < options.size(); i++)
+	{
+		string option = options[i];
+		if (option.find("--") == string::npos)
+		{
+			// Save up files to merge
+			filesToMerge.push_back(option);
+		}
+		else
+		{
+			//stop saving files to merge, this can occur when user is specifying own config file.
+			break;
+		}
+	}
+
+	for (unsigned int i = 0; i < filesToMerge.size(); i++)
+	{
+		mergerObj.loadFromProcessedLog(filesToMerge[i]);
+	}
+	//No need to provide output filename as it will be taken from config file.
+	mergerObj.SaveProcessedLog("");
+}
+
+void invokeHelpCommunicates(vector <string> options)
+{
+	if (options[1] == "--HELP" && options.size() <= 2)
+	{
+		showHelp();
+		exit(0);
+	}
+	else if (options[1] == "--HH" && options.size() > 2)
+	{
+		if (options[2] == "parser")
+		{
+			showHelpParser();
+			exit(0);
+		}
+		else if (options[2] == "merger")
+		{
+			showHelpMerger();
+			exit(0);
+		}
+		else if (options[2] == "config")
+		{
+			showHelpConfig();
+			exit(0);
+		}
+		else if (options[2] == "usage")
+		{
+			showHelpUsage();
+			exit(0);
+		}
+		else
+		{
+			cout << "Unknown option: " << options[2] << endl;
+			showHelp();
+			exit(0);
+		}
+	}
+	else if (options[1] == "--HH" && options.size() == 2)
+	{
+		cout << "No specified option!" << endl;
+		showHelp();
+		exit(0);
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	//For performance stats
+	auto startClock = chrono::steady_clock::now();
+	
+	Config &conf = Config::getInstance();
+	vector <string> options;
+
+	if (argc > 1)
+	{
+		for (int i = 0; i < argc; ++i)
+		{
+			options.push_back(argv[i]);
+			if (options[i].find("--") != string::npos)
+			{
+				//transform everything to upper case, giving more freedom to choose input format.
+				transform(options[i].begin(), options[i].end(), options[i].begin(), ::toupper);
+			}
+		}
+
+		//Invoke them if they are provided via cmd.
+		invokeHelpCommunicates(options);
+	}
+	else
+	{
+		cerr << "ERROR: Too few arguments! Type --help for options." << endl;
+		exit(-1);
+	}
+
+	//Setup all necessary global flags like: performance, debug
+	globalFlagSetup(options);
+	
+	//If provided setup the config filename to use isntead of the default one
+	setConfigFilename(options);
+	
+	//Main configuration setup befor any mode is invoked.
 	conf.configSetup();
 
 	if (argc > 1 && options[1] == "--PARSER")
 	{
-		if (find(options.begin(), options.end(), "-i") != options.end()) // i for in
+		if (find(options.begin(), options.end(), "-i") != options.end() || find(options.begin(), options.end(), "-o") != options.end())
 		{
-			ptrdiff_t pos = find(options.begin(), options.end(), "-i") - options.begin();
-			if (pos <= options.size())
-			{
-				conf.setLogFilename(options[pos + 1]);
-			}
-			else
-			{
-				cerr << "ERROR: Provide input file! Example:" << endl;
-				cerr << "\t../logger <ARG [PARSER]> -f mylog.txt ..." << endl;
-				return 0;
-			}
-		}
-
-		if (find(options.begin(), options.end(), "-o") != options.end()) //  o for out
-		{
-			ptrdiff_t pos = find(options.begin(), options.end(), "-o") - options.begin();
-			if (pos <= options.size())
-			{
-				conf.setOutputFilename(options[pos + 1]);
-			}
-			else
-			{
-				cerr << "ERROR: Provide output filename! Example:" << endl;
-				cerr << "\t../logger <ARG [PARSER]> -o myoutput.txt ..." << endl;
-				return 0;
-			}
+			//Set properly input log filename to use and/or the output filename for json log
+			setParserInputOutputFilename(options);
 		}
 
 		if (find(options.begin(), options.end(), "-f") != options.end()) //  f for folder
 		{
-			ptrdiff_t pos = find(options.begin(), options.end(), "-f") - options.begin();
-			ptrdiff_t suffixPos = find(options.begin(), options.end(), "-s") - options.begin(); //for user extension of file
-			ptrdiff_t shouldMerge = find(options.begin(), options.end(), "--MERGEOUTPUT") - options.begin();
-			vector <string> filesToMerge;
-			if (pos <= options.size())
-			{
-				vector <string> filesToParse;
-				string path = options[pos + 1];
-
-				for (const auto & entry : std::experimental::filesystem::directory_iterator(path))
-				{
-					filesToParse.push_back(entry.path().string());
-				}
-
-				for (auto & file : filesToParse)
-				{
-					string outputLogFilename;
-					if (suffixPos < options.size())
-					{
-						string extension = options[suffixPos + 1];
-						transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-						outputLogFilename = file + "." + extension;
-					}
-					else
-					{
-						outputLogFilename = file + ".json";
-					}
-					conf.setLogFilename(file);
-					conf.setOutputFilename(outputLogFilename);
-					Loader &loaderInst = Loader::getInstance();
-					loaderInst.loadFromFileToMap();
-					loaderInst.emptyLocalCache();
-					filesToMerge.push_back(outputLogFilename);
-				}
-				if (shouldMerge <= options.size())
-				{
-					Merger mergerObj;
-					for (auto & file : filesToMerge)
-					{
-						mergerObj.loadFromProcessedLog(file);
-					}
-					if (find(options.begin(), options.end(), "-o") != options.end())
-					{
-						ptrdiff_t pos = find(options.begin(), options.end(), "-o") - options.begin();
-						if (pos <= options.size())
-						{
-							conf.setOutputFilename(options[pos + 1]);
-							mergerObj.SaveProcessedLog(options[pos + 1]);
-						}
-						else
-						{
-							cerr << "ERROR: No filename for output provided for argument -o" << endl;
-							cerr << "Using default output filename: whole_default_merge.json" << endl;
-						}
-
-					}
-					else
-					{
-						conf.setOutputFilename("whole_default_merge.json");
-						mergerObj.SaveProcessedLog("whole_default_merge.json");
-					}
-				}
-
-				//If option clear is specified then logger will produce only one output file with whole merge.
-				if (find(options.begin(), options.end(), "--CLEAR") != options.end())
-				{
-					for (auto & file : filesToMerge)
-					{
-						remove(file.c_str());
-					}
-				}
-
-				return 0;
-			}
-			else
-			{
-				cerr << "ERROR: Provide path to folder! Example:" << endl;
-				cerr << "\t../logger <ARG [PARSER]> -f C:\\logs\\" << endl;
-				return 0;
-			}
+			parseWholeFolderOption(options);
+			exit(0);
 		}
 
 		// Parse the file taken from configuration file.
-		Loader &loaderInst = Loader::getInstance();
-		loaderInst.loadFromFileToMap();
+		useDefaultParserMode();
 	}
 	else if (argc > 1 && options[1] == "--MERGER")
 	{
-		Merger mergerObj;
-		vector <string> filesToMerge;
-		string empty;
-		for (int i = 2; i < argc; i++)
-		{
-			string option = argv[i];
-			if (option.find("--") == string::npos)
-			{
-				// Save up files to merge
-				filesToMerge.push_back(option);
-			}
-			else
-			{
-				//stop saving files to merge, this can occur when user is specifying own config file.
-				break;
-			}
-		}
-
-		for (unsigned int i = 0; i < filesToMerge.size(); i++)
-		{
-			mergerObj.loadFromProcessedLog(filesToMerge[i]);
-		}
-		mergerObj.SaveProcessedLog("");
+		useDefaultMergerMode(options);
 	}
 	else
 	{
 		cerr << "ERROR: No mode specified!" << endl;
 		showHelp();
-		return 0;
+		exit(-1);
 	}
 
 	if (conf.flags & conf.OpNOOUT)
