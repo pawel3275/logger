@@ -18,7 +18,9 @@ Logger supports both Windows and Linux.
 **Building**:
 
 To build project under linux or windows simply run:
+  
   $ *cmake CMakeLists.txt*
+  
   $ *make* (linux only)
 
 **Usage**:
