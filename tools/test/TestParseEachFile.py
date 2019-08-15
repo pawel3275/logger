@@ -91,6 +91,7 @@ def TEST_parse_all_files():
     counter = 0
     FailedTests = 0
     PassedTests = 0
+    currentPath = os.getcwd()
     for x in testFiles:
         print("Test Case", counter, ":")
         outputFilename = "PARSED_" + str(counter) + "_" + x
@@ -128,9 +129,9 @@ def TEST_parse_all_files():
 
 def TEST_merge_files():
     loggerbinaryfile = sys.argv[1]
+    currentPath = os.getcwd()
     goldenFilepath = currentPath + "/reference data/merger/"
     referenceFilepath = currentPath + "/reference data/parser/"
-
 
     print("Invoke command:", loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[0],
           referenceFilepath + referenceParseFiles[1])
@@ -172,7 +173,6 @@ def TEST_merge_files():
 
 # Do all necessary test preparations
 prepare_to_test()
-currentPath = path.dirname(__file__)
 loggerbinaryfile = sys.argv[1]
 
 TEST_parse_all_files()
