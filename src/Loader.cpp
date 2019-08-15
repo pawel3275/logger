@@ -16,7 +16,6 @@ Loader::Loader()
 	getDateFormatFromConfig();
 	getDataFormatPatterns();
 
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -64,7 +63,6 @@ int Loader::loadFromFileToMap()
 	}
 
 	string logLine;
-	string lastProcessedLine;
 	string startDate;
 	string endDate;
 	int lineBuffer = conf.m_lineBuffer;
@@ -91,7 +89,6 @@ int Loader::loadFromFileToMap()
 		loading = true;
 	}
 
-	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: loadFromFileToMap()" << endl;
@@ -108,7 +105,6 @@ int Loader::loadFromFileToMap()
 	while (getline(inFile, logLine))
 	{
 		numberOfLine++;
-		lastProcessedLine = logLine;
 
 		if (conf.flags & conf.OpDEBUG)
 		{
@@ -188,7 +184,6 @@ int Loader::loadFromFileToMap()
 int Loader::parseToCorrectContainer(string logLine)
 {
 	Config &conf = conf.getInstance();
-	size_t position = 0;
 	char separator = conf.m_separator;
 	string logLineEntryData;
 	
@@ -198,6 +193,7 @@ int Loader::parseToCorrectContainer(string logLine)
 		cout << "logLine->" << "logLine" << endl;
 	}
 
+	size_t position = 0;
 	// Split line and add to correct maps
 	for (auto format : conf.m_LogFormat)
 	{
@@ -241,13 +237,11 @@ int Loader::parseToCorrectContainer(string logLine)
 		logLine.erase(0, position + 1); // 1 stands for separator length
 	}
 
-	
 	map<string, string>::iterator it;
 	for (it = m_logLineValues.begin(); it != m_logLineValues.end(); it++)
 	{
 		insertToCorrectMap<string, string>(it->first, it->second);
 	}
-	
 	
 	return 0;
 }
@@ -365,7 +359,6 @@ void Loader::parseDateFromFileToMap(string logLine)
 		}
 	}
 
-	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "trimmedString->" << trimmedString << endl;
@@ -433,7 +426,6 @@ void Loader::emptyLocalCache()
 template <typename mapType, typename keyType> 
 int Loader::insertToCorrectMap(mapType format, keyType key)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -504,7 +496,6 @@ int Loader::insertToCorrectMap(mapType format, keyType key)
 /*********************************/
 void Loader::splitRequest(string requestLine)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -532,7 +523,6 @@ void Loader::splitRequest(string requestLine)
 /*********************************/
 string Loader::getDateFormatFromConfig()
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -563,7 +553,6 @@ string Loader::getDateFormatFromConfig()
 	}
 	m_dataPattern = pattern;
 
-	// DEBUG
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "pattern->" << pattern << endl;
@@ -583,7 +572,6 @@ string Loader::getDateFormatFromConfig()
 /*********************************/
 void Loader::setCreateOperatingSystem(string httpUserAgent)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -701,8 +689,6 @@ void Loader::setCreateOperatingSystem(string httpUserAgent)
 	{
 		m_operatingSystem["Search Bot"]++;
 	}
-
-
 }
 /*********************************/
 /*Description:
@@ -716,7 +702,6 @@ void Loader::setCreateOperatingSystem(string httpUserAgent)
 /*********************************/
 void Loader::setCreateWebBrowser(string httpUserAgent)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -725,8 +710,7 @@ void Loader::setCreateWebBrowser(string httpUserAgent)
 	}
 
 	if (httpUserAgent.find("Firefox/") != string::npos && 
-		httpUserAgent.find("Seamonkey/") == string::npos
-	   )
+		httpUserAgent.find("Seamonkey/") == string::npos)
 	{
 		m_webBrowser["Firefox"]++;
 	}
@@ -735,20 +719,18 @@ void Loader::setCreateWebBrowser(string httpUserAgent)
 		m_webBrowser["Seamonkey"]++;
 	}
 	else if (httpUserAgent.find("Chrome/") != string::npos && 
-		     httpUserAgent.find("Chromium/") == string::npos
-		    )
+		     httpUserAgent.find("Chromium/") == string::npos)
 	{
 		m_webBrowser["Chromium"]++;
 	}
 	else if (httpUserAgent.find("Safari/") != string::npos && 
-		    (httpUserAgent.find("Chromium/") == string::npos && httpUserAgent.find("Chrome/") == string::npos)
-		    )
+		    (httpUserAgent.find("Chromium/") == string::npos && 
+			 httpUserAgent.find("Chrome/") == string::npos))
 	{
 		m_webBrowser["Chromium"]++;
 	}
 	else if (httpUserAgent.find("OPR/") != string::npos || 
-		     httpUserAgent.find("Opera/") != string::npos
-		    )
+		     httpUserAgent.find("Opera/") != string::npos)
 	{
 		m_webBrowser["Opera"]++;
 	}
@@ -764,7 +746,6 @@ void Loader::setCreateWebBrowser(string httpUserAgent)
 	{
 		m_webBrowser["Others"]++;
 	}
-
 }
 
 /*********************************/
@@ -781,7 +762,6 @@ void Loader::setCreateWebBrowser(string httpUserAgent)
 /*********************************/
 void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -835,7 +815,6 @@ void Loader::setDate(vector <string> pattern, vector <string> dateDt)
 template<typename Type1, typename Type2>
 int Loader::mapInsertion(map <Type1, Type2> &data, Type1 key)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -873,7 +852,6 @@ int Loader::mapInsertion(map <Type1, Type2> &data, Type1 key)
 template<typename KeyType, typename ValueType>
 int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTypes format, map <KeyType, ValueType> data)
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -961,7 +939,6 @@ int Loader::emitProcessedDataToFile(defaultNginxFormats::extendedNginxFormatsTyp
 /*********************************/
 Loader::~Loader()
 {
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{

@@ -35,7 +35,7 @@ int Merger::addToMap(map <KeyType, ValueType> &data, KeyType key)
 	typename map <KeyType, ValueType>::iterator iter;
 	iter = data.find(key);
 	Config &conf = conf.getInstance();
-	// DEBUG
+
 	if (conf.flags & conf.OpDEBUG)
 	{
 		cout << "DEBUG: addToMap()" << endl;
@@ -75,7 +75,6 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 {
 	ifstream inFile;
 
-	// DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -97,7 +96,6 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 		inFile.open(sourceOutputFile.c_str(), ios::in);
 	}
 
-
 	string inLine;
 	string currentVar;
 	bool loading = false;
@@ -113,11 +111,11 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 
 	while (getline(inFile, inLine))
 	{
-		// DEBUG
 		if (conf.flags & conf.OpDEBUG)
 		{
 			cout << "DEBUG processing line: " << inLine << endl;
 		}
+
 		// Check if we are inside date
 		if (insideDate)
 		{
@@ -154,7 +152,6 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 					}
 				}
 			}
-
 
 			if (inLine.find("{") != string::npos)
 			{
@@ -206,7 +203,6 @@ void Merger::loadFromProcessedLog(string sourceOutputFile)
 			{
 				value = "1";
 			}
-
 
 			// Check if the value for key is present already in map for current var
 			if (m_varData[currentVar][key] == "")
@@ -325,7 +321,6 @@ int Merger::updateDateStruct(string s_year, string s_month, string s_day, string
 								return ((ptr->year == arg->year) && (ptr->month == arg->month));
 							});
 
-	//  DEBUG
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -368,7 +363,7 @@ int Merger::UpdateMapKeyValue(map<Type1, Type2>& data, Type1 key, Type2 value)
 	typename map <Type1, Type2>::iterator iter;
 	iter = data.find(key);
 
-	// DEBUG
+
 	Config &conf = conf.getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{

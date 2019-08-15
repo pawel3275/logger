@@ -12,6 +12,14 @@
 
 using namespace std;
 
+/*********************************/
+/*Description:
+/*	Show general help
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void showHelp()
 {
 	cout << "type: --help for general help." << endl;
@@ -34,6 +42,14 @@ void showHelp()
 
 }
 
+/*********************************/
+/*Description:
+/*	Show specific help about parser
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void showHelpParser()
 {
 	cout << "Parser is a mode, which takes as input the TXT file" << endl;
@@ -63,6 +79,14 @@ void showHelpParser()
 		cout << "\t\t../logger --parser -f <folderWithLogs> --mergeoutput --clear" << endl;
 }
 
+/*********************************/
+/*Description:
+/*	Show specific help about merger
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void showHelpMerger()
 {
 	cout << "Merger is a mode, which takes as input multiple" << endl;
@@ -74,6 +98,14 @@ void showHelpMerger()
 		cout << "\t../logger --merger file1 file2 file3 [...] [OPTIONS]" << endl;
 }
 
+/*********************************/
+/*Description:
+/*	Show specific help about config
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void showHelpConfig()
 {
 	cout << "Config is a mandatory file used during program execution." << endl;
@@ -84,6 +116,14 @@ void showHelpConfig()
 		cout << "\t--genNew\t\"Generate new default config file\"" << endl;
 }
 
+/*********************************/
+/*Description:
+/*	Show specific help about usage and examples
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void showHelpUsage()
 {
 	cout << "Examples:" << endl;
@@ -96,6 +136,15 @@ void showHelpUsage()
 	cout << "Please refer to specific modes via \"--hh ARG\" to get more details." << endl;
 }
 
+/*********************************/
+/*Description:
+/*	If user has specified flags to be used during execution,
+/*	this function is setting them up.
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void globalFlagSetup(vector <string> options)
 {
 	Config &conf = Config::getInstance();
@@ -122,6 +171,15 @@ void globalFlagSetup(vector <string> options)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	If user has specified config filename, this function
+/*	sets it up to provided one
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void setConfigFilename(vector <string> options)
 {
 	Config &conf = Config::getInstance();
@@ -141,6 +199,15 @@ void setConfigFilename(vector <string> options)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	If user has specified output or input log filename
+/*	we set it up for config here
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void setParserInputOutputFilename(vector <string> options)
 {
 	Config &conf = Config::getInstance();
@@ -175,6 +242,16 @@ void setParserInputOutputFilename(vector <string> options)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	If user has specified to parse whole content of a directory
+/*	we go through each log file and parse it. At the very end we can emrge it all
+/*	to one big filename or not, depending on '--clear' option.
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void parseWholeFolderOption(vector <string> options)
 {
 	Config &conf = Config::getInstance();
@@ -258,12 +335,29 @@ void parseWholeFolderOption(vector <string> options)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	Default parser invoking
+/*Input:
+/*	None
+/*Output:
+/*	None
+/*********************************/
 void useDefaultParserMode()
 {
 	Loader &loaderInst = Loader::getInstance();
 	loaderInst.loadFromFileToMap();
 }
 
+/*********************************/
+/*Description:
+/*	Default merger invoking, we take a list of files to emrge and merge
+/*	them up to one file specified insdie config
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void useDefaultMergerMode(vector <string> options)
 {
 	Merger mergerObj;
@@ -292,6 +386,14 @@ void useDefaultMergerMode(vector <string> options)
 	mergerObj.SaveProcessedLog("");
 }
 
+/*********************************/
+/*Description:
+/*	If user has specified --hh or --help trigger adequate info.
+/*Input:
+/*	vector <string> options - options provided via *argv
+/*Output:
+/*	None
+/*********************************/
 void invokeHelpCommunicates(vector <string> options)
 {
 	if (options[1] == "--HELP" && options.size() <= 2)
@@ -336,6 +438,10 @@ void invokeHelpCommunicates(vector <string> options)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	Main function.
+*/
 int main(int argc, char *argv[])
 {
 	//For performance stats

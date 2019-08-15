@@ -64,7 +64,6 @@ int Config::loadConfigFromFile()
 {
 	ifstream inFile;
 	inFile.open(m_configFilename.c_str());
-	int status = 0;
 
 	if (!inFile.is_open())
 	{
@@ -89,29 +88,20 @@ int Config::loadConfigFromFile()
 	}
 	string configLine;
 
-	vector <string> initialisedValues;
-	vector <string> uninitialisedValues;
-
 	while (getline(inFile, configLine))
 	{
 		if (configLine[0] == '#' || configLine.empty())
 		{
+			//skip comments inside config file
 			continue;
 		}
 		vector<string> lineElements;
 		split(configLine, '=', lineElements);
-		status = assaignConfigToVariables(lineElements[0], lineElements[1]); // assert needed here
-		
-		/*DEBUG*/
-		if (status != 0)
+
+		if (!lineElements[0].empty() && !lineElements[1].empty())
 		{
-			uninitialisedValues.push_back(lineElements[0]);
+			assaignConfigToVariables(lineElements[0], lineElements[1]);
 		}
-		else
-		{
-			initialisedValues.push_back(lineElements[0]);
-		}
-		/*DEBUG*/
 	}
 	return 0;
 }
@@ -162,7 +152,6 @@ int Config::assaignConfigToVariables(keyType key, variableType value)
 	}
 	if (key == "OUTPUT_FILENAME" && value.length() > 0 && m_outputFilename.empty())
 	{
-		//TODO experimental, need flag to control this
 		try
 		{
 			using namespace std::experimental::filesystem;
@@ -224,6 +213,7 @@ void Config::configSetup()
 	if (status != 0)
 	{
 		cerr << "ERROR: Load of the Config file has ecountered Error!" << endl;
+		exit(-1);
 	}
 }
 
@@ -244,6 +234,14 @@ void Config::setOutputFilename(string newOutputFilename)
 	}
 }
 
+/*********************************/
+/*Description:
+/*	Setter for log filename variable, which is used during load from log operations
+/*Input:
+/*	string newLogFilename - new filename.
+/*Output:
+/*	None
+/*********************************/
 void Config::setLogFilename(string newLogFilename)
 {
 	if (!newLogFilename.empty())

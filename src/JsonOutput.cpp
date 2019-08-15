@@ -30,7 +30,6 @@ JsonOutput::JsonOutput(
 	m_dataEnd   = "\t]\n";
 	m_varEnd    = "};\n";
 
-	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -60,7 +59,6 @@ JsonOutput::JsonOutput(
 	m_varName = "var " + varName + " = {\n";
 	Loader &loadedData = Loader::getInstance();
 	
-	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -81,7 +79,6 @@ JsonOutput::JsonOutput(
 /*********************************/
 int JsonOutput::monthStrTomonthDec(string month)
 {
-	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -104,7 +101,6 @@ int JsonOutput::monthStrTomonthDec(string month)
 /*********************************/
 string JsonOutput::monthDecTomonthStr(int month)
 {
-	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -126,7 +122,6 @@ string JsonOutput::monthDecTomonthStr(int month)
 /*********************************/
 int JsonOutput::getNumOfDays(int month)
 {
-	// DEBUG
 	Config &conf = Config::getInstance();
 	if (conf.flags & conf.OpDEBUG)
 	{
@@ -166,7 +161,6 @@ int JsonOutput::writeDateToFile(vector <shared_ptr<date>> m_dateInstancesPTR)
 		return 1;
 	}
 
-	// NO OUTPUT
 	if (conf.flags & conf.OpNOOUT)
 	{
 		return 0;
