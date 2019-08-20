@@ -48,6 +48,7 @@ else:
     # Setup properly config to parse logs from present day (take all)
     # Set start date in config
     process = subprocess.Popen([sys.executable, configModifierFile, configFile, "Date_start", "all"])
+
     # Set end date in config
     process = subprocess.Popen([sys.executable, configModifierFile, configFile, "Date_end", "all"])
     process.wait()

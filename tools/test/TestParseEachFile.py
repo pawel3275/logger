@@ -170,7 +170,6 @@ def TEST_merge_files():
     print(Style.RESET_ALL)
 
 
-
 # Do all necessary test preparations
 prepare_to_test()
 loggerbinaryfile = sys.argv[1]

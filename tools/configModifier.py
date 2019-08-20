@@ -32,8 +32,8 @@ else:
     print("Key: ", keyToChange)
     print("Value path: ", valueToSet)
 
-configContent = load_config_file(configPath)
 
+configContent = load_config_file(configPath)
 newContent = ""
 for line in configContent:
     if(keyToChange in line) and not (line.startswith("#")):
