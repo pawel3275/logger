@@ -1,8 +1,8 @@
 import os
-from os import path
 import sys
 import subprocess
-from colorama import Fore, Back, Style
+from os import path
+from colorama import Back, Fore, Style
 
 
 referenceParseFiles = [
@@ -80,107 +80,115 @@ def compare_two_files(referencefile, testfile):
 def prepare_to_test():
     if not len(sys.argv) == 2:
         print("Error! Provide logger binary file to test!")
+        show_help()
         sys.exit(-1)
-    loggerbinaryfile = sys.argv[1]
+
+    logger_binary_file = sys.argv[1]
     # Create default config file
-    configprocess = subprocess.Popen([loggerbinaryfile, "--config", "--genNew"])
+    configprocess = subprocess.Popen([logger_binary_file, "--config", "--genNew"])
     configprocess.wait()
 
 
-def TEST_parse_all_files():
+def test_parse_all_files():
     counter = 0
-    FailedTests = 0
-    PassedTests = 0
-    currentPath = os.getcwd()
+    failed_tests = 0
+    passed_tests = 0
+    current_path = os.getcwd()
+
     for x in testFiles:
         print("Test Case", counter, ":")
-        outputFilename = "PARSED_" + str(counter) + "_" + x
-        testFilepath = path.abspath(path.join(currentPath, "..", "..", "example_logs", x))
+        output_filename = "PARSED_" + str(counter) + "_" + x
+        test_filepath = path.abspath(path.join(current_path, "..", "..", "example_logs", x))
 
-        if not os.path.exists(testFilepath):
-            print("No test file found:", testFilepath)
+        if not os.path.exists(test_filepath):
+            print("No test file found:", test_filepath)
             continue
         # Parse file
-        print("Invoke command:", loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename)
-        process = subprocess.Popen([loggerbinaryfile, "--parser", "-i", testFilepath, "-o", outputFilename])
+        print("Invoke command:", logger_binary_file, "--parser", "-i", test_filepath, "-o", output_filename)
+        process = subprocess.Popen([logger_binary_file, "--parser", "-i", test_filepath, "-o", output_filename])
         process.wait()
 
-        fullOutputFilepath = outputFilename
-        referenceFilepath = currentPath + "/reference data/parser/" + referenceParseFiles[counter]
+        full_output_filepath = output_filename
+        reference_filepath = current_path + "/reference data/parser/" + referenceParseFiles[counter]
 
-        testCaseStatus = compare_two_files(referenceFilepath, fullOutputFilepath)
+        test_case_status = compare_two_files(reference_filepath, full_output_filepath)
 
-        if testCaseStatus:
-            os.remove(fullOutputFilepath)
+        if test_case_status:
+            os.remove(full_output_filepath)
 
         print(Style.RESET_ALL)
-        if testCaseStatus:
-            PassedTests +=1
+
+        if test_case_status:
+            passed_tests +=1
             print(Fore.GREEN)
             print("Test Case: ", counter, "PASSED")
         else:
-            FailedTests += 1
+            failed_tests += 1
             print(Fore.RED)
             print("Test Case: ", counter, "FAILED")
+
         print(Style.RESET_ALL)
-        print("Passed: ", PassedTests, " Failed: ", FailedTests)
+        print("Passed: ", passed_tests, " Failed: ", failed_tests)
         counter += 1
 
 
-def TEST_merge_files():
-    loggerbinaryfile = sys.argv[1]
-    currentPath = os.getcwd()
-    goldenFilepath = currentPath + "/reference data/merger/"
-    referenceFilepath = currentPath + "/reference data/parser/"
+def test_merge_files():
+    logger_binary_file = sys.argv[1]
+    current_path = os.getcwd()
+    golden_filepath = current_path + "/reference data/merger/"
+    reference_filepath = current_path + "/reference data/parser/"
 
-    print("Invoke command:", loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[0],
-          referenceFilepath + referenceParseFiles[1])
-    process = subprocess.Popen([loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[0],
-                                referenceFilepath + referenceParseFiles[1]])
+    print("Invoke command:", logger_binary_file, "--merger", reference_filepath + referenceParseFiles[0],
+          reference_filepath + referenceParseFiles[1])
+
+    process = subprocess.Popen([logger_binary_file, "--merger", reference_filepath + referenceParseFiles[0],
+                                reference_filepath + referenceParseFiles[1]])
     process.wait()
-    testCaseOne = compare_two_files("testoutput.txt", goldenFilepath + referenceMergeFiles[0])
+    test_case_one = compare_two_files("testoutput.txt", golden_filepath + referenceMergeFiles[0])
     os.remove("testoutput.txt")
 
-    print("Invoke command:", loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[0],
-          referenceFilepath + referenceParseFiles[1], referenceFilepath + referenceParseFiles[18])
-    process = subprocess.Popen([loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[0],
-                                referenceFilepath + referenceParseFiles[1], referenceFilepath + referenceParseFiles[18]])
+    print("Invoke command:", logger_binary_file, "--merger", reference_filepath + referenceParseFiles[0],
+          reference_filepath + referenceParseFiles[1], reference_filepath + referenceParseFiles[18])
+
+    process = subprocess.Popen([logger_binary_file, "--merger", reference_filepath + referenceParseFiles[0],
+                                reference_filepath + referenceParseFiles[1], reference_filepath + referenceParseFiles[18]])
     process.wait()
-    testCaseTwo = compare_two_files("testoutput.txt", goldenFilepath + referenceMergeFiles[1])
+    test_case_two = compare_two_files("testoutput.txt", golden_filepath + referenceMergeFiles[1])
     os.remove("testoutput.txt")
 
-    print("Invoke command:", loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[5],
-          referenceFilepath + referenceParseFiles[9], referenceFilepath + referenceParseFiles[19])
-    process = subprocess.Popen([loggerbinaryfile, "--merger", referenceFilepath + referenceParseFiles[5],
-                                referenceFilepath + referenceParseFiles[9], referenceFilepath + referenceParseFiles[19]])
+    print("Invoke command:", logger_binary_file, "--merger", reference_filepath + referenceParseFiles[5],
+          reference_filepath + referenceParseFiles[9], reference_filepath + referenceParseFiles[19])
+
+    process = subprocess.Popen([logger_binary_file, "--merger", reference_filepath + referenceParseFiles[5],
+                                reference_filepath + referenceParseFiles[9], reference_filepath + referenceParseFiles[19]])
     process.wait()
-    testCaseThree = compare_two_files("testoutput.txt", goldenFilepath + referenceMergeFiles[2])
+    test_case_three = compare_two_files("testoutput.txt", golden_filepath + referenceMergeFiles[2])
     os.remove("testoutput.txt")
 
     print(Style.RESET_ALL)
-    if testCaseOne and testCaseTwo and testCaseThree:
+
+    if test_case_one and test_case_two and test_case_three:
         print(Fore.GREEN)
         print("ALL MERGER TEST CASES PASSED")
     else:
         print(Fore.RED)
         print("FAILED:")
-        print(referenceMergeFiles[0], testCaseOne)
-        print(referenceMergeFiles[1], testCaseTwo)
-        print(referenceMergeFiles[2], testCaseThree)
+        print(referenceMergeFiles[0], test_case_one)
+        print(referenceMergeFiles[1], test_case_two)
+        print(referenceMergeFiles[2], test_case_three)
+
     print(Style.RESET_ALL)
 
+def show_help():
+    print("Tool to run basic tests for logger binary \n")
+    print("./Test_Parse_Each_File.py <logger_binary_file>\n")
+    print("./Test_Parse_Each_File.py /../logger.exe\n")
 
 # Do all necessary test preparations
 prepare_to_test()
-loggerbinaryfile = sys.argv[1]
+logger_binary_file = sys.argv[1]
 
-TEST_parse_all_files()
-TEST_merge_files()
+test_parse_all_files()
+test_merge_files()
 
 os.remove("config.cfg")
-
-
-
-
-
-

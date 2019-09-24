@@ -9,42 +9,34 @@ def show_help():
 
 
 def load_config_file(path):
-    file = open(path, "r")
-    content = file.readlines()
-    file.close()
+    with open(path, 'r') as file:
+        content = file.readlines()
     return content
 
 
 def override_config(path, content):
-    file = open(path, "w")
-    file.write(content)
-    file.close()
+    with open(path, 'w') as file:
+        file.write(content)
 
 
 if len(sys.argv) <= 1 or len(sys.argv) > 4:
     show_help()
     exit(-1)
 else:
-    configPath = str(sys.argv[1])
-    keyToChange = sys.argv[2]
-    valueToSet = sys.argv[3]
-    print("Config path: ", configPath)
-    print("Key: ", keyToChange)
-    print("Value path: ", valueToSet)
+    config_path = str(sys.argv[1])
+    key_to_change = sys.argv[2]
+    value_to_set = sys.argv[3]
+    print("Config path: ", config_path)
+    print("Key: ", key_to_change)
+    print("Value path: ", value_to_set)
 
 
-configContent = load_config_file(configPath)
-newContent = ""
-for line in configContent:
-    if(keyToChange in line) and not (line.startswith("#")):
-        line = keyToChange + " = " + valueToSet + "\n"
+config_content = load_config_file(config_path)
+new_content = ""
+for line in config_content:
+    if (key_to_change in line) and not (line.startswith("#")):
+        line = "{}{}{}{}".format(key_to_change, " = ", value_to_set, "\n")
         print("New line is: ", line)
-    newContent += line
+    new_content += line
 
-override_config(configPath, newContent)
-
-
-
-
-
-
+override_config(config_path, new_content)
