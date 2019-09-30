@@ -9,19 +9,20 @@ def show_help():
 
 
 def load_config_file(path):
-    with open(path, 'r') as file:
+    with open(path, "r") as file:
         content = file.readlines()
     return content
 
 
 def override_config(path, content):
-    with open(path, 'w') as file:
+    with open(path, "w") as file:
         file.write(content)
 
 
 if len(sys.argv) <= 1 or len(sys.argv) > 4:
     show_help()
     exit(-1)
+
 else:
     config_path = str(sys.argv[1])
     key_to_change = sys.argv[2]
@@ -33,10 +34,12 @@ else:
 
 config_content = load_config_file(config_path)
 new_content = ""
+
 for line in config_content:
     if (key_to_change in line) and not (line.startswith("#")):
-        line = "{}{}{}{}".format(key_to_change, " = ", value_to_set, "\n")
+        line = "{} = {}\n".format(key_to_change, value_to_set)
         print("New line is: ", line)
+
     new_content += line
 
 override_config(config_path, new_content)

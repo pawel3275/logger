@@ -38,7 +38,7 @@ else:
     process.wait()
 
     # Parse the log from day before
-    first_output_parsed_file = "{}{}".format(os.getcwd(), "\ParsedLog1.json")
+    first_output_parsed_file = "{}\ParsedLog1.json".format(os.getcwd())
     process = subprocess.Popen([logger_binary_file, "--parser", "-o", first_output_parsed_file, "-i", first_log_file,
                      "--conf", config_file])
     process.wait()
@@ -55,7 +55,7 @@ else:
     process.wait()
 
     # Parse log from today
-    second_output_parsed_file = "{}{}".format(os.getcwd(), "\ParsedLog2.json")
+    second_output_parsed_file = "{}\ParsedLog2.json".format(os.getcwd())
     process = subprocess.Popen([logger_binary_file, "--parser", "-o", second_output_parsed_file, "-i", second_log_file,
                      "--conf", config_file])
     process.wait()

@@ -97,7 +97,7 @@ def test_parse_all_files():
 
     for x in testFiles:
         print("Test Case", counter, ":")
-        output_filename = "{}{}{}{}".format("PARSED_", str(counter), "_", x)
+        output_filename = "PARSED_{}_{}".format(str(counter), x)
         test_filepath = path.abspath(path.join(current_path, "..", "..", "example_logs", x))
 
         if not os.path.exists(test_filepath):
@@ -109,7 +109,7 @@ def test_parse_all_files():
         process.wait()
 
         full_output_filepath = output_filename
-        reference_filepath = "{}{}{}".format(current_path, "/reference data/parser/", referenceParseFiles[counter])
+        reference_filepath = "{}/reference data/parser/{}".format(current_path, referenceParseFiles[counter])
         test_case_status = compare_two_files(reference_filepath, full_output_filepath)
 
         if test_case_status:
@@ -134,8 +134,8 @@ def test_parse_all_files():
 def test_merge_files():
     logger_binary_file = sys.argv[1]
     current_path = os.getcwd()
-    golden_filepath = "{}{}".format(current_path, "/reference data/merger/")
-    reference_filepath = "{}{}".format(current_path, "/reference data/parser/")
+    golden_filepath = "{}/reference data/merger/".format(current_path)
+    reference_filepath = "{}/reference data/parser/".format(current_path)
 
     print("Invoke command:", logger_binary_file, "--merger", reference_filepath + referenceParseFiles[0],
           reference_filepath + referenceParseFiles[1])
@@ -169,6 +169,7 @@ def test_merge_files():
     if test_case_one and test_case_two and test_case_three:
         print(Fore.GREEN)
         print("ALL MERGER TEST CASES PASSED")
+
     else:
         print(Fore.RED)
         print("FAILED:")
